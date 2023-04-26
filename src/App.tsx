@@ -1,5 +1,11 @@
+import Entrance from "./components/entrance/Entrance";
+
 function App() {
-  return <h1 className="text-lg text-blue-500">Hello World</h1>;
+  return (
+    <main className="grid h-screen grid-cols-4 bg-gray-300">
+      <Entrance />
+    </main>
+  );
 }
 
 export default App;
