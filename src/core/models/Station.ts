@@ -1,4 +1,4 @@
-import { Worker } from "./Worker";
+import { Worker } from "@models/Worker";
 
 export class Station {
     constructor(private id: string) {}
