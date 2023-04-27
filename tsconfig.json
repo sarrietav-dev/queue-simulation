@@ -21,9 +21,10 @@
 
     "baseUrl": "src",
     "paths": {
-      "@distributions/*": ["src/core/distributions/*"],
-      "@components/*": ["src/components/*"],
-      "@assets/*": ["src/assets/*"]
+      "@distributions/*": ["core/distributions/*"],
+      "@models/*": ["core/models/*"],
+      "@components/*": ["components/*"],
+      "@assets/*": ["assets/*"]
     }
   },
   "include": ["src"],
