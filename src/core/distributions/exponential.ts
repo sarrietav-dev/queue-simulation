@@ -1,4 +1,6 @@
-export class Exponential {
+import { Distribution } from "./Distribution";
+
+export class Exponential implements Distribution {
     constructor(private lambda: number) {}
 
     getVariable(x: number): number {
