@@ -22,7 +22,7 @@
     "baseUrl": "src",
     "paths": {
       "@distributions/*": ["core/distributions/*"],
-      "@models/*": ["core/models/*"],
+      "@entities/*": ["core/entities/*"],
       "@components/*": ["components/*"],
       "@assets/*": ["assets/*"]
     }
