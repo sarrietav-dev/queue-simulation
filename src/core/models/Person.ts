@@ -1,5 +1,9 @@
 export class Person {
-    constructor(private id: string) {}
+    constructor() {}
 
-    private timeWaiting: number = 0;
+    private _timeWaiting: number = 0;
+
+    get timeWaiting(): number {
+        return this._timeWaiting;
+    }
 }
