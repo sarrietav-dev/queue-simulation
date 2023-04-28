@@ -19,4 +19,10 @@ export class Server {
             this.servingRate.getVariable(this.random.get())
         );
     }
+
+    tick(): void {
+        if (this.timeRemainingUntilFree > 0) {
+            this.timeRemainingUntilFree--;
+        }
+    }
 }
