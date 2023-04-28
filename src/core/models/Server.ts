@@ -1,12 +1,8 @@
 import { Distribution } from "@distributions/Distribution";
-import { Person } from "./Person";
 import { Random } from "utils/random";
 
-export class Worker {
-    constructor(
-        private servingRate: Distribution,
-        private random: Random
-    ) {}
+export class Server {
+    constructor(private servingRate: Distribution, private random: Random) {}
 
     private timeRemainingUntilFree: number = 0;
 
@@ -18,7 +14,7 @@ export class Worker {
         return this.timeRemainingUntilFree;
     }
 
-    serve(person: Person) {
+    serve() {
         this.timeRemainingUntilFree = Math.round(
             this.servingRate.getVariable(this.random.get())
         );
