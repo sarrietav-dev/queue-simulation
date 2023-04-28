@@ -4,7 +4,6 @@ import { Random } from "utils/random";
 
 export class Worker {
     constructor(
-        private id: string,
         private servingRate: Distribution,
         private random: Random
     ) {}

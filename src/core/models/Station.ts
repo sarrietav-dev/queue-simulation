@@ -1,7 +1,7 @@
 import { Worker } from "@models/Worker";
 
 export class Station {
-    constructor(private id: string) {}
+    constructor() {}
 
     private workers: Worker[] = [];
     private queue: Worker[] = [];

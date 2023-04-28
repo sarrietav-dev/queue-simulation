@@ -7,9 +7,9 @@ import { Exponential } from "../../distributions/exponential";
 it("should be busy when serving a person", () => {
     const dist = new Exponential(2);
     const random = new Random(1);
-    const worker = new Worker("1", dist, random);
+    const worker = new Worker(dist, random);
 
-    worker.serve(new Person("4"));
+    worker.serve(new Person());
 
     expect(worker.isBusy).toBe(true);
 });
@@ -17,10 +17,10 @@ it("should be busy when serving a person", () => {
 it("should be busy when serving a person", () => {
     const dist = new Exponential(2);
     const random = new Random(1);
-    const worker = new Worker("1", dist, random);
+    const worker = new Worker(dist, random);
     vi.spyOn(random, "get").mockReturnValue(0.001964637);
 
-    worker.serve(new Person("4"));
+    worker.serve(new Person());
 
     expect(worker.isBusy).toBe(true);
     expect(worker.timeRemaining).toBe(12);
