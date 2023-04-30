@@ -1,5 +1,5 @@
-import { Distribution } from "@distributions/Distribution";
-import { Random } from "utils/random";
+import { Random } from "../../utils/random";
+import { Distribution } from "../distributions/Distribution";
 
 export class Server {
     constructor(private servingRate: Distribution, private random: Random) {}
