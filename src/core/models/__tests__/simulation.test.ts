@@ -1,11 +1,28 @@
-import { it } from "vitest";
+import { expect, it, vi } from "vitest";
+import { SimulationBuilder } from "../Simulation";
+import { Station } from "../Station";
+import { ArrivalIterator } from "../ArrivalIterator";
+import { Poisson } from "../../distributions/poisson";
+import { Random } from "../../../utils/random";
+import { Server } from "../Server";
 
-it("starts the simulation correctly");
+it("has 4 clients on the system", () => {
+    const arrivalIterator = new ArrivalIterator(
+        new Poisson(0.333),
+        new Random(2)
+    );
+    vi.spyOn(arrivalIterator, "getArrivals").mockReturnValue([1, 1, 1, 1]);
 
-it("passes a client from one station to another");
+    const distribution = new Poisson(0.5);
+    vi.spyOn(distribution, "getVariable").mockReturnValue(1);
 
-it("runs the simulation for a given time");
+    const simulation = new SimulationBuilder()
+        .setStations([new Station(new Server(distribution, new Random(1)))])
+        .setArrivalIterator(arrivalIterator)
+        .setTimeStop(4)
+        .build();
 
-it("runs the simulation until all clients are served");
+    simulation.run();
 
-it("computes the longest queue length");
+    expect(simulation.clientsServed).toBe(4);
+});
