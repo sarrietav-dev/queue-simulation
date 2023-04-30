@@ -19,6 +19,12 @@ export class Station {
             throw new Error("Cannot add more than 4 servers");
         }
 
+        server.forEach((server) => {
+            server.onClientServed = (client) => {
+                this._mediator?.notify(this._index, client);
+            };
+        });
+
         this._workers.push(...server);
     }
 
@@ -36,12 +42,13 @@ export class Station {
         while (this.isAnyServerAvailable) {
             const server = this.getAvailableServer();
 
-            if (server) {
-                this.queue.shift();
-                server.serve();
-            } else {
-                break;
-            }
+            if (!server) break;
+
+            const client = this.queue.shift();
+
+            if (!client) break;
+
+            server.serve(client);
         }
     }
 
