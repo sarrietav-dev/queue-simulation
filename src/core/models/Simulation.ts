@@ -22,8 +22,9 @@ export class Simulation implements Mediator {
             this.clientsServed < this.clientsInSystem
         ) {
             const clientsArrived = this.getClientsArrived();
-            const clients: Client[] = Array.from({ length: clientsArrived }, () =>
-                this.createClient()
+            const clients: Client[] = Array.from(
+                { length: clientsArrived },
+                () => this.createClient()
             );
             this.tick();
             this.enqueueClient(...clients);
@@ -62,38 +63,30 @@ export class Simulation implements Mediator {
 
 export class SimulationBuilder {
     private stations: Station[] = [];
-    private entryRate?: Distribution;
-    private random?: Random;
+    private arrivalIterator?: ArrivalIterator;
 
     public setStations(stations: Station[]): SimulationBuilder {
         this.stations = stations;
         return this;
     }
 
-    public setEntryRate(distribution: Distribution): SimulationBuilder {
-        this.entryRate = distribution;
-        return this;
-    }
-
-    public setRandom(random: Random): SimulationBuilder {
-        this.random = random;
+    public setArrivalIterator(
+        arrivalIterator: ArrivalIterator
+    ): SimulationBuilder {
+        this.arrivalIterator = arrivalIterator;
         return this;
     }
 
     public build(): Simulation {
-        if (!this.entryRate) {
-            throw new Error("Entry rate is not set");
+        if (this.stations.length === 0) {
+            throw new Error("Stations not set");
         }
 
-        if (!this.random) {
-            throw new Error("Random is not set");
+        if (!this.arrivalIterator) {
+            throw new Error("Arrival iterator not set");
         }
 
-        const simulation = new Simulation(
-            this.stations,
-            this.entryRate,
-            this.random
-        );
+        const simulation = new Simulation(this.stations, this.arrivalIterator);
 
         for (let station of this.stations) {
             station.mediator = simulation;
