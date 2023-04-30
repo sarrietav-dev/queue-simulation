@@ -35,7 +35,10 @@ export class Simulation implements Mediator {
         return peopleArrived;
     }
 
-    private tick() {}
+    private tick() {
+        this.time++;
+        this.stations.forEach((station) => station.tick());
+    }
 
     private enqueuePeople(...people: Client[]) {
         for (let person of people) {
