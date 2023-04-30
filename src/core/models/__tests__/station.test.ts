@@ -1,7 +1,7 @@
 import { Exponential } from "../../distributions/exponential";
 import { Server } from "../Server";
 import { Station } from "../Station";
-import { Person } from "../Person";
+import { Client } from "../Client";
 import { Random } from "../../../utils/random";
 import { describe, expect, it, vi } from "vitest";
 
@@ -57,7 +57,7 @@ describe("when pushing clients to the queue", () => {
 
         station.addServer(new Server(new Exponential(2), new Random(1)));
 
-        station.enqueueClient(new Person());
+        station.enqueueClient(new Client());
         station.tick();
 
         expect(station.clientsWaiting).toBe(0);
@@ -68,8 +68,8 @@ describe("when pushing clients to the queue", () => {
 
         station.addServer(new Server(new Exponential(2), new Random(1)));
 
-        station.enqueueClient(new Person());
-        station.enqueueClient(new Person());
+        station.enqueueClient(new Client());
+        station.enqueueClient(new Client());
 
         station.tick();
 
@@ -86,11 +86,11 @@ describe("when pushing clients to the queue", () => {
 
         station.addServer(server);
 
-        station.enqueueClient(new Person());
+        station.enqueueClient(new Client());
 
         station.tick();
 
-        station.enqueueClient(new Person());
+        station.enqueueClient(new Client());
 
         station.tick();
 
@@ -110,8 +110,8 @@ describe("when pushing clients to the queue", () => {
 
         station.addServer(server, server2);
 
-        station.enqueueClient(new Person());
-        station.enqueueClient(new Person());
+        station.enqueueClient(new Client());
+        station.enqueueClient(new Client());
 
         station.tick();
 

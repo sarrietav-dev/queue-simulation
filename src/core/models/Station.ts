@@ -1,11 +1,11 @@
 import { Server } from "./Server";
-import { Person } from "./Person";
+import { Client } from "./Client";
 
 export class Station {
     constructor() {}
 
     private _workers: Server[] = [];
-    private queue: Person[] = [];
+    private queue: Client[] = [];
 
     get size() {
         return this._workers.length;
@@ -23,7 +23,7 @@ export class Station {
         return this.queue.length;
     }
 
-    enqueueClient(person: Person) {
+    enqueueClient(person: Client) {
         this.queue.push(person);
     }
 

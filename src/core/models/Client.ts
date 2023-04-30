@@ -1,4 +1,4 @@
-export class Person {
+export class Client {
     constructor() {}
 
     private _timeWaiting: number = 0;

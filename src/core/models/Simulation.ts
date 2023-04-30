@@ -1,6 +1,6 @@
 import { Random } from "../../utils/random";
 import { Distribution } from "../distributions/Distribution";
-import { Person } from "./Person";
+import { Client } from "./Client";
 import { Station } from "./Station";
 
 export class Simulation {
@@ -36,14 +36,14 @@ export class Simulation {
 
     private tick() {}
 
-    private enqueuePeople(...people: Person[]) {
+    private enqueuePeople(...people: Client[]) {
         for (let person of people) {
             this.stations[0].enqueueClient(person);
         }
     }
 
     private createPerson() {
-        return new Person();
+        return new Client();
     }
 }
 
