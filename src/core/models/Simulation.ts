@@ -1,38 +1,39 @@
 import { Random } from "../../utils/random";
 import { Distribution } from "../distributions/Distribution";
+import { ArrivalIterator } from "./ArrivalIterator";
 import { Client } from "./Client";
 import { Mediator } from "./Mediator";
 import { Station } from "./Station";
 
 export class Simulation implements Mediator {
-    constructor(
-        private stations: Station[],
-        private entryRate: Distribution,
-        private random: Random
-    ) {}
+    constructor(private stations: Station[], arrivalIterator: ArrivalIterator) {
+        this.arrivals = arrivalIterator.getArrivals(this.timeStop);
+    }
 
     private time: number = 0;
     private timeStop: number = 60;
-    private peopleInSystem: number = 0;
-    private peopleServed: number = 0;
+    private clientsInSystem: number = 0;
+    private clientsServed: number = 0;
+    private arrivals: number[] = [];
 
     public run() {
         while (
             this.time < this.timeStop &&
-            this.peopleServed < this.peopleInSystem
+            this.clientsServed < this.clientsInSystem
         ) {
-            const peopleArrived = this.getPeopleArrived();
-            const people = Array.from({ length: peopleArrived }, () =>
-                this.createPerson()
+            const clientsArrived = this.getClientsArrived();
+            const clients: Client[] = Array.from({ length: clientsArrived }, () =>
+                this.createClient()
             );
             this.tick();
-            this.enqueuePeople(...people);
+            this.enqueueClient(...clients);
         }
     }
-    getPeopleArrived() {
-        const peopleArrived = this.entryRate.getVariable(this.random.get());
-        this.peopleInSystem += peopleArrived;
-        return peopleArrived;
+
+    getClientsArrived() {
+        const clientsArrived = this.arrivals[this.time];
+        this.clientsInSystem += clientsArrived;
+        return clientsArrived;
     }
 
     private tick() {
@@ -40,19 +41,19 @@ export class Simulation implements Mediator {
         this.stations.forEach((station) => station.tick());
     }
 
-    private enqueuePeople(...people: Client[]) {
-        for (let person of people) {
-            this.stations[0].enqueueClient(person);
+    private enqueueClient(...clients: Client[]) {
+        for (let client of clients) {
+            this.stations[0].enqueueClient(client);
         }
     }
 
-    private createPerson() {
+    private createClient() {
         return new Client();
     }
 
     notify(senderIndex: number, client: Client): void {
         if (senderIndex === this.stations.length - 1) {
-            this.peopleServed++;
+            this.clientsServed++;
         } else {
             this.stations[senderIndex + 1].enqueueClient(client);
         }
