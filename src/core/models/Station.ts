@@ -3,7 +3,13 @@ import { Client } from "./Client";
 import { Mediator } from "./Mediator";
 
 export class Station {
-    constructor() {}
+    constructor(...server: Server[]) {
+        if (server.length == 0) {
+            throw new Error("Cannot create a station with no servers");
+        }
+
+        this.addServer(...server);
+    }
 
     private _workers: Server[] = [];
     private queue: Client[] = [];
