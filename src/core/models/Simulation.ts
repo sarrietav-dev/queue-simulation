@@ -1,9 +1,10 @@
 import { Random } from "../../utils/random";
 import { Distribution } from "../distributions/Distribution";
 import { Client } from "./Client";
+import { Mediator } from "./Mediator";
 import { Station } from "./Station";
 
-export class Simulation {
+export class Simulation implements Mediator {
     constructor(
         private stations: Station[],
         private entryRate: Distribution,
@@ -45,6 +46,14 @@ export class Simulation {
     private createPerson() {
         return new Client();
     }
+
+    notify(senderIndex: number, client: Client): void {
+        if (senderIndex === this.stations.length - 1) {
+            this.peopleServed++;
+        } else {
+            this.stations[senderIndex + 1].enqueueClient(client);
+        }
+    }
 }
 
 export class SimulationBuilder {
@@ -76,6 +85,16 @@ export class SimulationBuilder {
             throw new Error("Random is not set");
         }
 
-        return new Simulation(this.stations, this.entryRate, this.random);
+        const simulation = new Simulation(
+            this.stations,
+            this.entryRate,
+            this.random
+        );
+
+        for (let station of this.stations) {
+            station.mediator = simulation;
+        }
+
+        return simulation;
     }
 }

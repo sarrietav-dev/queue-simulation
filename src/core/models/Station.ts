@@ -1,11 +1,14 @@
 import { Server } from "./Server";
 import { Client } from "./Client";
+import { Mediator } from "./Mediator";
 
 export class Station {
     constructor() {}
 
     private _workers: Server[] = [];
     private queue: Client[] = [];
+    private _index: number = 0;
+    private _mediator?: Mediator;
 
     get size() {
         return this._workers.length;
@@ -40,6 +43,10 @@ export class Station {
                 break;
             }
         }
+    }
+
+    set mediator(mediator: Mediator) {
+        this._mediator = mediator;
     }
 
     private getAvailableServer() {
