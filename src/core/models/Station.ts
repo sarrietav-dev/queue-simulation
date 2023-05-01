@@ -11,13 +11,13 @@ export class Station {
         this.addServer(...server);
     }
 
-    private _workers: Server[] = [];
+    private _servers: Server[] = [];
     private queue: Client[] = [];
     private _index: number = 0;
     private _mediator?: Mediator;
 
     get size() {
-        return this._workers.length;
+        return this._servers.length;
     }
 
     addServer(...server: Server[]) {
@@ -31,7 +31,7 @@ export class Station {
             };
         });
 
-        this._workers.push(...server);
+        this._servers.push(...server);
     }
 
     get clientsWaiting() {
@@ -55,7 +55,7 @@ export class Station {
             server.serve(client);
         }
 
-        this._workers.forEach((server) => server.tick());
+        this._servers.forEach((server) => server.tick());
     }
 
     set mediator(mediator: Mediator) {
@@ -63,10 +63,14 @@ export class Station {
     }
 
     private getAvailableServer() {
-        return this._workers.find((server) => !server.isBusy);
+        return this._servers.find((server) => !server.isBusy);
     }
 
     private isAnyServerAvailable() {
-        return this._workers.some((server) => !server.isBusy);
+        return this._servers.some((server) => !server.isBusy);
+    }
+
+    set index(index: number) {
+        this._index = index;
     }
 }
