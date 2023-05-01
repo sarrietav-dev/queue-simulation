@@ -43,6 +43,8 @@ export class Station {
     }
 
     tick() {
+        this._servers.forEach((server) => server.notifyIfFinished());
+
         while (this.isAnyServerAvailable()) {
             const server = this.getAvailableServer();
 

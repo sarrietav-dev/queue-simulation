@@ -5,7 +5,7 @@ import { Client } from "./Client";
 export class Server {
     constructor(private servingRate: Distribution, private random: Random) {}
 
-    private timeRemainingUntilFree: number = 0;
+    private timeRemainingUntilFree: number = -1;
     private clientBeingServed?: Client;
     private _onClientServed: (client: Client) => void = () => {};
 
@@ -31,10 +31,12 @@ export class Server {
     tick(): void {
         if (this.timeRemainingUntilFree > 0) {
             this.timeRemainingUntilFree--;
+        }
+    }
 
-            if (this.timeRemainingUntilFree === 0) {
-                this.notifyStation();
-            }
+    notifyIfFinished(): void {
+        if (this.timeRemainingUntilFree === 0) {
+            this.notifyStation();
         }
     }
 
