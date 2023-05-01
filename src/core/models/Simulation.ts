@@ -109,8 +109,9 @@ export class SimulationBuilder {
             this.timeStop
         );
 
-        for (let station of this.stations) {
-            station.mediator = simulation;
+        for (let i = 0; i < this.stations.length; i++) {
+            this.stations[i].mediator = simulation;
+            this.stations[i].index = i;
         }
 
         return simulation;
