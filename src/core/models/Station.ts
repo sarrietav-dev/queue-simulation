@@ -43,9 +43,7 @@ export class Station {
     }
 
     tick() {
-        this._workers.forEach((server) => server.tick());
-
-        while (this.isAnyServerAvailable) {
+        while (this.isAnyServerAvailable()) {
             const server = this.getAvailableServer();
 
             if (!server) break;
@@ -56,6 +54,8 @@ export class Station {
 
             server.serve(client);
         }
+
+        this._workers.forEach((server) => server.tick());
     }
 
     set mediator(mediator: Mediator) {

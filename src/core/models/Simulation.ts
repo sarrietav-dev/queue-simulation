@@ -12,8 +12,8 @@ export class Simulation implements Mediator {
         this.arrivals = arrivalIterator.getArrivals(this.timeStop);
     }
 
-    private time: number = 0;
-    private clientsInSystem: number = 0;
+    private _time: number = 0;
+    private _clientsInSystem: number = 0;
     private _clientsServed: number = 0;
     private arrivals: number[] = [];
 
@@ -25,8 +25,8 @@ export class Simulation implements Mediator {
                 { length: clientsArrived },
                 () => this.createClient()
             );
-            this.tick();
             this.enqueueClient(...clients);
+            this.tick();
         }
     }
 
@@ -35,13 +35,13 @@ export class Simulation implements Mediator {
     }
 
     getClientsArrived() {
-        const clientsArrived = this.arrivals[this.time];
-        this.clientsInSystem += clientsArrived;
+        const clientsArrived = this.arrivals[this._time];
+        this._clientsInSystem += clientsArrived;
         return clientsArrived;
     }
 
     private tick() {
-        this.time++;
+        this._time++;
         this.stations.forEach((station) => station.tick());
     }
 
@@ -61,6 +61,14 @@ export class Simulation implements Mediator {
         } else {
             this.stations[senderIndex + 1].enqueueClient(client);
         }
+    }
+
+    get time(): number {
+        return this._time;
+    }
+
+    get clientsInSystem(): number {
+        return this._clientsInSystem;
     }
 }
 
