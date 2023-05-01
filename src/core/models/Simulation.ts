@@ -6,7 +6,7 @@ import { Station } from "./Station";
 type SimulationResults = {
     time: number;
     longestQueue: {
-        station: number;
+        station: number[];
         length: number;
     };
 };
@@ -52,21 +52,26 @@ export class Simulation implements Mediator {
         return this._clientsServed;
     }
 
-    private get longestQueue() {
+    private get longestQueue(): {
+        station: number[];
+        length: number;
+    } {
         let longestQueue: {
-            station: number;
+            station: number[];
             length: number;
         } = {
-            station: 0,
+            station: [],
             length: 0,
         };
 
         this.stations.forEach((station, index) => {
             const stationLongestQueue = station.greatestQueueLength;
 
-            if (stationLongestQueue > longestQueue.length) {
+            if (stationLongestQueue === longestQueue.length) {
+                longestQueue.station.push(index);
+            } else if (stationLongestQueue > longestQueue.length) {
                 longestQueue = {
-                    station: index,
+                    station: [index],
                     length: stationLongestQueue,
                 };
             }
