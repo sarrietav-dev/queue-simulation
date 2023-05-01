@@ -3,6 +3,14 @@ import { Client } from "./Client";
 import { Mediator } from "./Mediator";
 import { Station } from "./Station";
 
+type SimulationResults = {
+    time: number;
+    longestQueue: {
+        station: number;
+        length: number;
+    };
+};
+
 export class Simulation implements Mediator {
     constructor(
         private stations: Station[],
@@ -17,8 +25,9 @@ export class Simulation implements Mediator {
     private _clientsServed: number = 0;
     private arrivals: number[] = [];
 
-    public run() {
-        const arrivingClients = this.arrivals.reduce((a, b) => a + b, 0);
+    public run(): SimulationResults {
+        const arrivingClients = this.arrivingClients;
+
         while (arrivingClients > this.clientsServed) {
             const clientsArrived = this.getClientsArrived();
             const clients: Client[] = Array.from(
@@ -28,10 +37,42 @@ export class Simulation implements Mediator {
             this.enqueueClient(...clients);
             this.tick();
         }
+
+        return {
+            time: this.time,
+            longestQueue: this.longestQueue,
+        };
+    }
+
+    private get arrivingClients() {
+        return this.arrivals.reduce((a, b) => a + b, 0);
     }
 
     get clientsServed(): number {
         return this._clientsServed;
+    }
+
+    private get longestQueue() {
+        let longestQueue: {
+            station: number;
+            length: number;
+        } = {
+            station: 0,
+            length: 0,
+        };
+
+        this.stations.forEach((station, index) => {
+            const stationLongestQueue = station.greatestQueueLength;
+
+            if (stationLongestQueue > longestQueue.length) {
+                longestQueue = {
+                    station: index,
+                    length: stationLongestQueue,
+                };
+            }
+        });
+
+        return longestQueue;
     }
 
     getClientsArrived() {

@@ -15,6 +15,7 @@ export class Station {
     private queue: Client[] = [];
     private _index: number = 0;
     private _mediator?: Mediator;
+    private _greatestQueueLength: number = 0;
 
     get size() {
         return this._servers.length;
@@ -40,6 +41,14 @@ export class Station {
 
     enqueueClient(person: Client) {
         this.queue.push(person);
+
+        if (this.queue.length > this._greatestQueueLength) {
+            this._greatestQueueLength = this.queue.length;
+        }
+    }
+
+    get greatestQueueLength() {
+        return this._greatestQueueLength;
     }
 
     tick() {
