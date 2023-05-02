@@ -1,5 +1,6 @@
 import { useState } from "react";
 import DistributionForm from "./DistributionForm";
+import Chance from "chance";
 
 type ModalProps = {
     open?: boolean;
@@ -13,23 +14,33 @@ type ModalData = {
 };
 
 function Modal(props: ModalProps) {
-    let initialData: Server[] = [
+    const chance = new Chance.Chance();
+    let initialData: { server: Server; key: string }[] = [
         {
-            distribution: {
-                name: "uniform",
-                mean: {
-                    a: "0.0",
-                    b: "0.0",
+            key: chance.guid(),
+            server: {
+                distribution: {
+                    name: "uniform",
+                    mean: {
+                        a: "0.0",
+                        b: "0.0",
+                    },
                 },
             },
         },
     ];
 
     if (props.data && props.data.servers.length !== 0) {
-        initialData = props.data.servers;
+        initialData = props.data.servers.map((server) => {
+            return {
+                server: server,
+                key: chance.guid(),
+            };
+        });
     }
 
-    const [servers, setServers] = useState<Server[]>(initialData);
+    const [servers, setServers] =
+        useState<{ server: Server; key: string }[]>(initialData);
     const [sameDist, setSameDist] = useState<boolean>(false);
 
     const handleCreateServer = () => {
@@ -38,11 +49,14 @@ function Modal(props: ModalProps) {
             return [
                 ...prev,
                 {
-                    distribution: {
-                        name: "uniform",
-                        mean: {
-                            a: "0.0",
-                            b: "0.0",
+                    key: chance.guid(),
+                    server: {
+                        distribution: {
+                            name: "uniform",
+                            mean: {
+                                a: "0.0",
+                                b: "0.0",
+                            },
                         },
                     },
                 },
@@ -57,16 +71,28 @@ function Modal(props: ModalProps) {
 
         setServers((prev) => {
             if (prev.length === 0) return prev;
-            return prev.map((server) => {
+            const newServers = prev.map((server) => {
                 return {
                     ...server,
-                    distribution: {
-                        ...prev[0].distribution,
+                    server: {
+                        ...server.server,
+                        distribution: {
+                            ...server.server.distribution,
+                            name: prev[0].server.distribution.name,
+                        },
                     },
                 };
             });
+
+            return newServers;
         });
     };
+
+    function handleDeleteServer(key: string) {
+        setServers((prev) => {
+            return prev.filter((server) => server.key !== key);
+        });
+    }
 
     return (
         <dialog open={props.open}>
@@ -109,7 +135,7 @@ function Modal(props: ModalProps) {
                 {!sameDist ? (
                     <div>
                         {servers.map((server, index) => (
-                            <section key={index}>
+                            <section key={server.key}>
                                 <div
                                     style={{
                                         display: "flex",
@@ -122,17 +148,19 @@ function Modal(props: ModalProps) {
                                         href="#"
                                         role="button"
                                         className="secondary"
+                                        onClick={() => handleDeleteServer(server.key)}
                                     >
                                         Delete
                                     </a>
                                 </div>
                                 <DistributionForm
-                                    data={server.distribution}
+                                    data={server.server.distribution}
                                     onChange={(data) => {
                                         setServers((prev) => {
                                             const newServers = [...prev];
-                                            newServers[index].distribution =
-                                                data;
+                                            newServers[
+                                                index
+                                            ].server.distribution = data;
                                             return newServers;
                                         });
                                     }}
@@ -142,13 +170,18 @@ function Modal(props: ModalProps) {
                     </div>
                 ) : (
                     <DistributionForm
-                        data={servers[0].distribution ?? { name }}
+                        data={
+                            servers[0].server.distribution ?? {
+                                name: "uniform",
+                                mean: { a: "0.0", b: "0.0" },
+                            }
+                        }
                         onChange={(data) => {
                             setServers((prev) => {
                                 const newServers = [...prev];
                                 console.log(data);
                                 newServers.forEach((server) => {
-                                    server.distribution = data;
+                                    server.server.distribution = data;
                                 });
                                 return newServers;
                             });
