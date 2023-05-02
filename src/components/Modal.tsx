@@ -5,7 +5,7 @@ import Chance from "chance";
 type ModalProps = {
     open?: boolean;
     data?: ModalData;
-    onSave?: () => void;
+    onSave?: (servers: Server[]) => void;
 };
 
 type ModalData = {
@@ -42,6 +42,7 @@ function Modal(props: ModalProps) {
     const [servers, setServers] =
         useState<{ server: Server; key: string }[]>(initialData);
     const [sameDist, setSameDist] = useState<boolean>(false);
+    const [open, setOpen] = useState<boolean>(props.open ?? false);
 
     const handleCreateServer = () => {
         if (servers.length === 4) return;
@@ -95,7 +96,7 @@ function Modal(props: ModalProps) {
     }
 
     return (
-        <dialog open={props.open}>
+        <dialog open={open}>
             <article
                 style={{
                     minWidth: "50%",
@@ -148,7 +149,9 @@ function Modal(props: ModalProps) {
                                         href="#"
                                         role="button"
                                         className="secondary"
-                                        onClick={() => handleDeleteServer(server.key)}
+                                        onClick={() =>
+                                            handleDeleteServer(server.key)
+                                        }
                                     >
                                         Delete
                                     </a>
@@ -189,10 +192,27 @@ function Modal(props: ModalProps) {
                     />
                 )}
                 <footer>
-                    <a href="#cancel" role="button" className="secondary">
+                    <a
+                        href="#cancel"
+                        role="button"
+                        className="secondary"
+                        onClick={() => {
+                            setOpen(false);
+                        }}
+                    >
                         Cancel
                     </a>
-                    <a href="#confirm" role="button">
+                    <a
+                        href="#confirm"
+                        role="button"
+                        onClick={() => {
+                            props.onSave?.(
+                                servers.map((server) => server.server)
+                            );
+
+                            setOpen(false);
+                        }}
+                    >
                         Confirm
                     </a>
                 </footer>
