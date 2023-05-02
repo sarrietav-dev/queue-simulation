@@ -3,10 +3,12 @@ import "./App.css";
 import Modal from "./components/Modal";
 import { Chance } from "chance";
 import { DistributionForm } from "./components/DistributionForm";
+import { ResultsModal } from "./components/ResultsModal";
 
 function App() {
   const chance = new Chance.Chance();
 
+  const [resultModal, setResultModal] = useState<boolean>(false);
   const [stations, setStations] = useState<
     { key: string; servers: Server[] }[]
   >([
@@ -108,6 +110,10 @@ function App() {
     });
   };
 
+  const handleSubmit = () => {
+    setResultModal(true);
+  };
+
   return (
     <>
       <Modal
@@ -153,7 +159,7 @@ function App() {
             </ul>
           </nav>
         </section>
-        <form>
+        <form onSubmit={handleSubmit}>
           <section>
             <h2>Tasa de llegada</h2>
             <DistributionForm
@@ -231,6 +237,14 @@ function App() {
           <button type="submit">Iniciar simulacion</button>
         </form>
       </div>
+      <ResultsModal
+        longestQueue={{ size: 10, station: [0] }}
+        modalState={{
+          open: resultModal,
+          setOpen: setResultModal,
+        }}
+        timeSpent={50}
+      />
     </>
   );
 }
