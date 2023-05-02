@@ -1,8 +1,8 @@
 import { Chance } from "chance";
 
 export class Random {
-  constructor(seed: number) {
-    this.random = new Chance(seed);
+  constructor(seed?: number) {
+    this.random = seed !== undefined ? new Chance(seed) : new Chance();
   }
 
   private random: Chance.Chance;

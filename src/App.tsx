@@ -126,7 +126,7 @@ function App() {
         .setArrivalIterator(
           new ArrivalIterator(
             getDistribution(entryDistribution.name),
-            new Random(1902312)
+            new Random()
           )
         )
         .setTimeStop(options.simulationTime)
@@ -214,7 +214,7 @@ function App() {
         ...station.servers.map((server) => {
           return new DomainServer(
             getDistribution(server.distribution.name),
-            new Random(1902312)
+            new Random()
           );
         })
       );
