@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DistributionForm from "./DistributionForm";
+import { DistributionForm } from "./DistributionForm";
 import Chance from "chance";
 
 type ModalProps = {
@@ -8,7 +8,7 @@ type ModalProps = {
     modalState: {
         open: boolean;
         setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    }
+    };
 };
 
 type ModalData = {

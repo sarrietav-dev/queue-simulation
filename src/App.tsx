@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import Modal from "./components/Modal";
 import { Chance } from "chance";
+import { DistributionForm } from "./components/DistributionForm";
 
 function App() {
     const chance = new Chance.Chance();
@@ -31,6 +32,22 @@ function App() {
     }>({ id: 0, servers: [], key: "" });
 
     const [modalShown, setModalShown] = useState<boolean>(false);
+
+    const [entryDistribution, setEntryDistribution] =
+        useState<DistributionData>({
+            name: "exponential",
+            mean: {
+                mean: "20",
+            },
+        });
+
+    const [options, setOptions] = useState<{
+        simulationTime: number;
+        simulationRuns: number;
+    }>({
+        simulationTime: 60,
+        simulationRuns: 1,
+    });
 
     const handleEditStation = (id: number, servers: Server[], key: string) => {
         setModalShown(true);
@@ -110,23 +127,12 @@ function App() {
                 <form>
                     <section>
                         <h2>Tasa de llegada</h2>
-                        <div className="grid">
-                            <label htmlFor="entry_distribution">
-                                Distribución de llegada
-                                <select id="entry_distribution">
-                                    <option value="" selected>
-                                        Selecciona una distribución
-                                    </option>
-                                    <option value="1">Uniforme</option>
-                                    <option value="2">Exponencial</option>
-                                    <option value="3">Poisson</option>
-                                </select>
-                            </label>
-                            <label htmlFor="entry_mean">
-                                Media
-                                <input type="text" name="" id="entry_mean" />
-                            </label>
-                        </div>
+                        <DistributionForm
+                            data={entryDistribution}
+                            onChange={(data) => {
+                                setEntryDistribution(data);
+                            }}
+                        />
                     </section>
                     <section>
                         <header className="stations_header">
@@ -173,7 +179,15 @@ function App() {
                                 <input
                                     type="number"
                                     id="simulation_duration"
-                                    value={60}
+                                    value={options.simulationTime}
+                                    onChange={(e) =>
+                                        setOptions((prev) => ({
+                                            ...prev,
+                                            simulationTime: Number(
+                                                e.target.value
+                                            ),
+                                        }))
+                                    }
                                 />
                             </label>
                             <label htmlFor="simulation_count">
@@ -181,7 +195,15 @@ function App() {
                                 <input
                                     type="number"
                                     id="simulation_count"
-                                    value={1}
+                                    value={options.simulationRuns}
+                                    onChange={(e) =>
+                                        setOptions((prev) => ({
+                                            ...prev,
+                                            simulationRuns: Number(
+                                                e.target.value
+                                            ),
+                                        }))
+                                    }
                                 />
                             </label>
                         </div>

@@ -6,7 +6,7 @@ type DistributionFormProps = {
     onChange: (data: DistributionData) => void;
 };
 
-function DistributionForm({ data, onChange }: DistributionFormProps) {
+export function DistributionForm({ data, onChange }: DistributionFormProps) {
     const [distribution, setDistribution] = useState<DistributionName>(
         data.name ?? "exponential"
     );
@@ -124,5 +124,3 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
         </div>
     );
 }
-
-export default DistributionForm;
