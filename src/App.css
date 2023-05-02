@@ -1,9 +1,9 @@
 .stations_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .theme_button {
-    font-size: 2em;
+  font-size: 2em;
 }

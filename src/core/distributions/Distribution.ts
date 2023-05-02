@@ -1,3 +1,3 @@
 export interface Distribution {
-    getVariable(x: number): number;
+  getVariable(x: number): number;
 }

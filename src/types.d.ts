@@ -1,10 +1,10 @@
 type Server = {
-    distribution: DistributionData;
+  distribution: DistributionData;
 };
 
 type DistributionData = {
-    name: DistributionName;
-    mean: DistributionMean;
+  name: DistributionName;
+  mean: DistributionMean;
 };
 
 type DistributionName = "exponential" | "uniform" | "poisson";

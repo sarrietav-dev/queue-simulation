@@ -1,9 +1,9 @@
 export class Client {
-    constructor() {}
+  constructor() {}
 
-    private _timeWaiting: number = 0;
+  private _timeWaiting: number = 0;
 
-    get timeWaiting(): number {
-        return this._timeWaiting;
-    }
+  get timeWaiting(): number {
+    return this._timeWaiting;
+  }
 }
