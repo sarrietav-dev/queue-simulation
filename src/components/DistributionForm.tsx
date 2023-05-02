@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NumberInput from "./NumberInput";
 
 type DistributionFormProps = {
     data: DistributionData;
@@ -9,21 +10,18 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
     const [distribution, setDistribution] = useState<DistributionName>(
         data.name ?? "exponential"
     );
-    const [mean, setMean] = useState<{ mean: number }>(
+    const [mean, setMean] = useState<Mean>(
         data.name !== "uniform"
-            ? { mean: (data.mean as Mean).mean ?? 0 }
-            : { mean: 0 }
+            ? { mean: (data.mean as Mean).mean ?? "0" }
+            : { mean: "0" }
     );
-    const [uniformMean, setUniformMean] = useState<{
-        a: number;
-        b: number;
-    }>(
+    const [uniformMean, setUniformMean] = useState<UniformMean>(
         data.name === "uniform"
             ? {
-                  a: (data.mean as UniformMean).a ?? 0,
-                  b: (data.mean as UniformMean).b ?? 0,
+                  a: (data.mean as UniformMean).a ?? "0",
+                  b: (data.mean as UniformMean).b ?? "0",
               }
-            : { a: 0, b: 0 }
+            : { a: "0", b: "0" }
     );
 
     const handleDistributionChange = (
@@ -60,24 +58,21 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                 <>
                     <label htmlFor="">
                         a
-                        <input
-                            type="text"
-                            name=""
-                            id=""
+                        <NumberInput
                             value={uniformMean.a}
                             onChange={(e) => {
                                 setUniformMean((prev) => {
                                     onChange({
                                         name: "uniform",
                                         mean: {
-                                            a: Number(e.target.value),
+                                            a: e,
                                             b: prev.b,
                                         },
                                     });
 
                                     return {
                                         ...prev,
-                                        a: Number(e.target.value),
+                                        a: e,
                                     };
                                 });
                             }}
@@ -85,10 +80,7 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                     </label>
                     <label htmlFor="">
                         b
-                        <input
-                            type="text"
-                            name=""
-                            id=""
+                        <NumberInput
                             value={uniformMean.b}
                             onChange={(e) => {
                                 setUniformMean((prev) => {
@@ -96,12 +88,12 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                                         name: "uniform",
                                         mean: {
                                             a: prev.a,
-                                            b: Number(e.target.value),
+                                            b: e,
                                         },
                                     });
                                     return {
                                         ...prev,
-                                        b: Number(e.target.value),
+                                        b: e,
                                     };
                                 });
                             }}
@@ -111,21 +103,18 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
             ) : (
                 <label>
                     Media
-                    <input
-                        type="text"
-                        name=""
-                        id=""
+                    <NumberInput
                         value={mean.mean}
-                        onChange={(e) => {
+                        onChange={(value) => {
                             setMean((prev) => {
                                 onChange({
                                     name: distribution,
-                                    mean: { mean: Number(e.target.value) },
+                                    mean: { mean: value },
                                 });
 
                                 return {
                                     ...prev,
-                                    mean: Number(e.target.value),
+                                    mean: value,
                                 };
                             });
                         }}

@@ -9,8 +9,8 @@ type DistributionData = {
 
 type DistributionName = "exponential" | "uniform" | "poisson";
 
-type DistributionMean = { mean: number } | { a: number; b: number };
+type DistributionMean = { mean: string } | { a: string; b: string };
 
-type UniformMean = { a: number; b: number };
+type UniformMean = { a: string; b: string };
 
-type Mean = { mean: number };
+type Mean = { mean: string };

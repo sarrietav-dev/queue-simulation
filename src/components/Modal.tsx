@@ -18,8 +18,8 @@ function Modal(props: ModalProps) {
             distribution: {
                 name: "uniform",
                 mean: {
-                    a: 0,
-                    b: 0,
+                    a: "0.0",
+                    b: "0.0",
                 },
             },
         },
@@ -41,8 +41,8 @@ function Modal(props: ModalProps) {
                     distribution: {
                         name: "uniform",
                         mean: {
-                            a: 0,
-                            b: 0,
+                            a: "0.0",
+                            b: "0.0",
                         },
                     },
                 },
