@@ -4,6 +4,14 @@ import Modal from "./components/Modal";
 import { Chance } from "chance";
 import { DistributionForm } from "./components/DistributionForm";
 import { ResultsModal } from "./components/ResultsModal";
+import { Simulation, SimulationBuilder } from "./core/models/Simulation";
+import { ArrivalIterator } from "./core/models/ArrivalIterator";
+import { Exponential } from "./core/distributions/exponential";
+import { Uniform } from "./core/distributions/uniform";
+import { Poisson } from "./core/distributions/poisson";
+import { Random } from "./utils/random";
+import { Station } from "./core/models/Station";
+import { Server as DomainServer } from "./core/models/Server";
 
 function App() {
   const chance = new Chance.Chance();
@@ -111,7 +119,106 @@ function App() {
   };
 
   const handleSubmit = () => {
+    const simulations: Simulation[] = [];
+
+    for (let i = 0; i < options.simulationRuns; i++) {
+      const simulation = new SimulationBuilder()
+        .setArrivalIterator(
+          new ArrivalIterator(
+            getDistribution(entryDistribution.name),
+            new Random(1902312)
+          )
+        )
+        .setTimeStop(options.simulationTime)
+        .setStations(buildStations())
+        .build();
+
+      simulations.push(simulation);
+    }
+
+    const longestQueues: {
+      station: number[];
+      length: number;
+    }[] = [];
+
+    const times: number[] = [];
+
+    simulations.forEach((simulation) => {
+      const results = simulation.run();
+      console.log(results);
+
+      longestQueues.push(results.longestQueue);
+      times.push(results.time);
+    });
+
+    const averageTime = times.reduce((a, b) => a + b, 0) / times.length;
+
+    // Get the mode of the longest queues stations
+    const longestQueuesStations: number[] = [];
+
+    longestQueues.forEach((queue) => {
+      queue.station.forEach((station) => {
+        longestQueuesStations.push(station);
+      });
+    });
+
+    const mode = longestQueuesStations
+      .sort(
+        (a, b) =>
+          longestQueuesStations.filter((v) => v === a).length -
+          longestQueuesStations.filter((v) => v === b).length
+      )
+      .pop();
+
+    const modeCount = longestQueuesStations.filter((v) => v === mode).length;
+
+    const averageLongestQueue =
+      longestQueues.reduce((a, b) => a + b.length, 0) / longestQueues.length;
+
+    setResults({
+      timeSpent: averageTime,
+      longestQueue: {
+        size: averageLongestQueue,
+        station: [mode as number],
+      },
+    });
+
     setResultModal(true);
+  };
+
+  const [results, setResults] = useState<{
+    timeSpent: number;
+    longestQueue: { size: number; station: number[] };
+  }>({
+    timeSpent: 0,
+    longestQueue: { size: 0, station: [] },
+  });
+
+  const getDistribution = (name: DistributionName) => {
+    switch (name) {
+      case "exponential":
+        return new Exponential(Number(entryDistribution.mean));
+      case "uniform":
+        return new Uniform(
+          Number((entryDistribution.mean as UniformMean).a),
+          Number((entryDistribution.mean as UniformMean).b)
+        );
+      case "poisson":
+        return new Poisson(Number(entryDistribution.mean));
+    }
+  };
+
+  const buildStations = (): Station[] => {
+    return stations.map((station) => {
+      return new Station(
+        ...station.servers.map((server) => {
+          return new DomainServer(
+            getDistribution(server.distribution.name),
+            new Random(1902312)
+          );
+        })
+      );
+    });
   };
 
   return (
@@ -238,12 +345,11 @@ function App() {
         </form>
       </div>
       <ResultsModal
-        longestQueue={{ size: 10, station: [0] }}
         modalState={{
           open: resultModal,
           setOpen: setResultModal,
         }}
-        timeSpent={50}
+        {...results}
       />
     </>
   );
