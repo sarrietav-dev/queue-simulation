@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import Modal from "./components/Modal";
 import { Chance } from "chance";
@@ -47,6 +47,31 @@ function App() {
     simulationTime: 60,
     simulationRuns: 1,
   });
+
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)"
+    ).matches;
+
+    if (prefersDark) {
+      setIsDarkMode(true);
+      document.documentElement.dataset.theme = "dark";
+    }
+  }, []);
+
+  const handleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      if (!prev) {
+        document.documentElement.dataset.theme = "dark";
+      } else {
+        document.documentElement.dataset.theme = "light";
+      }
+
+      return !prev;
+    });
+  };
 
   const handleEditStation = (id: number, servers: Server[], key: string) => {
     setModalShown(true);
@@ -116,8 +141,15 @@ function App() {
                 <strong>Simulador</strong>
               </li>
             </ul>
-            <ul>
-              <strong className="theme_button">🌞</strong>
+            <ul
+              style={{
+                cursor: "pointer",
+              }}
+              onClick={handleDarkMode}
+            >
+              <strong className="theme_button">
+                {isDarkMode ? "🌞" : "🌚"}
+              </strong>
             </ul>
           </nav>
         </section>
