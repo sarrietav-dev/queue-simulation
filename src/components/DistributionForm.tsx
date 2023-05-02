@@ -14,7 +14,7 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
             ? { mean: (data.mean as Mean).mean ?? 0 }
             : { mean: 0 }
     );
-    const [exponentialMean, setExponentialMean] = useState<{
+    const [uniformMean, setUniformMean] = useState<{
         a: number;
         b: number;
     }>(
@@ -29,7 +29,16 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
     const handleDistributionChange = (
         event: React.ChangeEvent<HTMLSelectElement>
     ) => {
-        setDistribution(event.target.value as DistributionName);
+        setDistribution(() => {
+            const newDistribution = event.target.value as DistributionName;
+
+            onChange({
+                name: newDistribution,
+                mean: newDistribution === "uniform" ? uniformMean : mean,
+            });
+
+            return newDistribution;
+        });
     };
 
     return (
@@ -42,9 +51,6 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                     id="entry_distribution"
                     onChange={handleDistributionChange}
                 >
-                    <option value="" selected>
-                        Selecciona una distribución
-                    </option>
                     <option value="uniform">Uniforme</option>
                     <option value="exponential">Exponencial</option>
                     <option value="poisson">Poisson</option>
@@ -58,9 +64,9 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                             type="text"
                             name=""
                             id=""
-                            value={exponentialMean.a}
+                            value={uniformMean.a}
                             onChange={(e) => {
-                                setExponentialMean((prev) => {
+                                setUniformMean((prev) => {
                                     onChange({
                                         name: "uniform",
                                         mean: {
@@ -83,9 +89,9 @@ function DistributionForm({ data, onChange }: DistributionFormProps) {
                             type="text"
                             name=""
                             id=""
-                            value={exponentialMean.b}
+                            value={uniformMean.b}
                             onChange={(e) => {
-                                setExponentialMean((prev) => {
+                                setUniformMean((prev) => {
                                     onChange({
                                         name: "uniform",
                                         mean: {
