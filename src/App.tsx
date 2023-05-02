@@ -1,10 +1,99 @@
+import { useRef, useState } from "react";
 import "./App.css";
 import Modal from "./components/Modal";
+import { Chance } from "chance";
 
 function App() {
+    const chance = new Chance.Chance();
+
+    const [stations, setStations] = useState<
+        { key: string; servers: Server[] }[]
+    >([
+        {
+            key: chance.guid(),
+            servers: [
+                {
+                    distribution: {
+                        mean: {
+                            mean: "20",
+                        },
+                        name: "exponential",
+                    },
+                },
+            ],
+        },
+    ]);
+
+    const [editingStation, setEditingStation] = useState<{
+        id: number;
+        key: string;
+        servers: Server[];
+    }>({ id: 0, servers: [], key: "" });
+
+    const [modalShown, setModalShown] = useState<boolean>(false);
+
+    const handleEditStation = (id: number, servers: Server[], key: string) => {
+        setModalShown(true);
+        setEditingStation({
+            id,
+            servers: servers,
+            key,
+        });
+    };
+
+    const handleCreateNewStation = () => {
+        if (stations.length === 4) return;
+
+        const newStation: { key: string; servers: Server[] } = {
+            key: chance.guid(),
+            servers: [
+                {
+                    distribution: {
+                        mean: {
+                            mean: "20",
+                        },
+                        name: "exponential",
+                    },
+                },
+            ],
+        };
+
+        setStations((prev) => [...prev, newStation]);
+        setModalShown(true);
+        setEditingStation({
+            id: stations.length - 1,
+            servers: newStation.servers,
+            key: newStation.key,
+        });
+    };
+
     return (
         <>
-            <Modal open />
+            <Modal
+                modalState={{ open: modalShown, setOpen: setModalShown }}
+                data={{
+                    stationId: editingStation.id,
+                    stationKey: editingStation.key,
+                    servers: editingStation.servers,
+                }}
+                onSave={(data) => {
+                    setStations((prev) => {
+                        const newStations = [...prev];
+                        const station = prev.findIndex(
+                            (v) => v.key === data.stationKey
+                        );
+
+                        if (station === -1) return prev;
+
+                        newStations[station] = {
+                            key: data.stationKey,
+                            servers: data.servers,
+                        };
+
+                        return newStations;
+                    });
+                }}
+            />
             <div className="container">
                 <section>
                     <nav>
@@ -24,7 +113,7 @@ function App() {
                         <div className="grid">
                             <label htmlFor="entry_distribution">
                                 Distribución de llegada
-                                <select name="" id="entry_distribution">
+                                <select id="entry_distribution">
                                     <option value="" selected>
                                         Selecciona una distribución
                                     </option>
@@ -42,16 +131,33 @@ function App() {
                     <section>
                         <header className="stations_header">
                             <h2>Estaciones</h2>
-                            <button role="button">
+                            <button
+                                onClick={handleCreateNewStation}
+                                disabled={stations.length === 4}
+                                role="button"
+                            >
                                 Agregar mas estaciones
                             </button>
                         </header>
                         <div className="grid">
-                            {[0, 1, 2, 4].map((index) => (
-                                <article key={index}>
+                            {stations.map((stations, index) => (
+                                <article
+                                    key={stations.key}
+                                    style={{
+                                        cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                        handleEditStation(
+                                            index,
+                                            stations.servers,
+                                            stations.key
+                                        )
+                                    }
+                                >
                                     <h3>Estación {index}</h3>
                                     <h4>
-                                        Servidores: <span>4</span>
+                                        Servidores:{" "}
+                                        <span>{stations.servers.length}</span>
                                     </h4>
                                 </article>
                             ))}

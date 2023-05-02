@@ -3,13 +3,17 @@ import DistributionForm from "./DistributionForm";
 import Chance from "chance";
 
 type ModalProps = {
-    open?: boolean;
     data?: ModalData;
-    onSave?: (servers: Server[]) => void;
+    onSave?: (data: { stationKey: string; servers: Server[] }) => void;
+    modalState: {
+        open: boolean;
+        setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    }
 };
 
 type ModalData = {
     stationId: number;
+    stationKey: string;
     servers: Server[];
 };
 
@@ -42,8 +46,6 @@ function Modal(props: ModalProps) {
     const [servers, setServers] =
         useState<{ server: Server; key: string }[]>(initialData);
     const [sameDist, setSameDist] = useState<boolean>(false);
-    const [open, setOpen] = useState<boolean>(props.open ?? false);
-
     const handleCreateServer = () => {
         if (servers.length === 4) return;
         setServers((prev) => {
@@ -96,7 +98,7 @@ function Modal(props: ModalProps) {
     }
 
     return (
-        <dialog open={open}>
+        <dialog open={props.modalState.open}>
             <article
                 style={{
                     minWidth: "50%",
@@ -197,7 +199,7 @@ function Modal(props: ModalProps) {
                         role="button"
                         className="secondary"
                         onClick={() => {
-                            setOpen(false);
+                            props.modalState.setOpen(false);
                         }}
                     >
                         Cancel
@@ -206,11 +208,14 @@ function Modal(props: ModalProps) {
                         href="#confirm"
                         role="button"
                         onClick={() => {
-                            props.onSave?.(
-                                servers.map((server) => server.server)
-                            );
+                            props.onSave?.({
+                                stationKey: props.data?.stationKey ?? "",
+                                servers: servers.map((server) => {
+                                    return server.server;
+                                }),
+                            });
 
-                            setOpen(false);
+                            props.modalState.setOpen(false);
                         }}
                     >
                         Confirm
