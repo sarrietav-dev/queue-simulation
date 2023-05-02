@@ -1,80 +1,10 @@
 import "./App.css";
+import Modal from "./components/Modal";
 
 function App() {
     return (
         <>
-            <dialog>
-                <article
-                    style={{
-                        minWidth: "50%",
-                    }}
-                >
-                    <header>Estación 0</header>
-                    <section className="stations_header">
-                        <h2 style={{ margin: 0 }}>Estaciones</h2>
-                        <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: "1rem",
-                            }}
-                        >
-                            <a href="#" role="button">
-                                Agregar mas estaciones
-                            </a>
-                            <label htmlFor="same_dist">
-                                <input type="checkbox" name="" id="same_dist" />
-                                Misma distribución?
-                            </label>
-                        </div>
-                    </section>
-                    {[0, 1, 2, 4].map((index) => (
-                        <section>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <h3>Servidor: {index}</h3>
-                                <a href="#" role="button" className="secondary">
-                                    Delete
-                                </a>
-                            </div>
-                            <div className="grid">
-                                <label htmlFor="entry_distribution">
-                                    Distribución de llegada
-                                    <select name="" id="entry_distribution">
-                                        <option value="" selected>
-                                            Selecciona una distribución
-                                        </option>
-                                        <option value="1">Uniforme</option>
-                                        <option value="2">Exponencial</option>
-                                        <option value="3">Poisson</option>
-                                    </select>
-                                </label>
-                                <label htmlFor="entry_mean">
-                                    Media
-                                    <input
-                                        type="text"
-                                        name=""
-                                        id="entry_mean"
-                                    />
-                                </label>
-                            </div>
-                        </section>
-                    ))}
-                    <footer>
-                        <a href="#cancel" role="button" className="secondary">
-                            Cancel
-                        </a>
-                        <a href="#confirm" role="button">
-                            Confirm
-                        </a>
-                    </footer>
-                </article>
-            </dialog>
+            <Modal open />
             <div className="container">
                 <section>
                     <nav>
@@ -88,7 +18,7 @@ function App() {
                         </ul>
                     </nav>
                 </section>
-                <form action="">
+                <form>
                     <section>
                         <h2>Tasa de llegada</h2>
                         <div className="grid">
