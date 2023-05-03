@@ -2,6 +2,10 @@
   "name": "queue-simulator",
   "version": "0.0.0",
   "private": true,
+  "author": {
+    "name": "Sebastian Arrieta"
+  },
+  "description": "Queue Simulator",
   "main": "electron.cjs",
   "scripts": {
     "dev": "vite",
