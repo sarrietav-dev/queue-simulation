@@ -55,13 +55,7 @@
     />
   </Teleport>
   <Teleport to="body">
-    <ResultsModal
-      v-if="resultModalOpen"
-      :open="resultModalOpen"
-      :timeSpent="10"
-      :longestQueue="{ size: 10, station: ['1', '2'] }"
-      @close="handleResultsModalClose"
-    />
+    <ResultsModal v-if="resultModalOpen" :open="resultModalOpen" @close="handleResultsModalClose" />
   </Teleport>
 </template>
 
@@ -72,6 +66,10 @@ import TheNav from './layout/TheNav.vue'
 import StationCard from './components/StationCard.vue'
 import StationModal from './components/StationModal.vue'
 import ResultsModal from './components/ResultsModal.vue'
+import { useSimulations } from './store/simulations'
+import { SimulationRunner } from './utils/simulation-runner'
+
+const store = useSimulations()
 
 const arrival = ref<DistributionData>({
   name: 'exponential',
@@ -137,6 +135,11 @@ function handleResultsModalClose() {
 }
 
 function onSubmit() {
+  store.$state.simulations = new SimulationRunner({
+    arrival: arrival.value,
+    stations: stations.value,
+    options: options.value
+  }).runs
   resultModalOpen.value = true
 }
 </script>
