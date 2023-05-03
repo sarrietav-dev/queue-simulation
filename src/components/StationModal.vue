@@ -16,11 +16,7 @@
           </label>
         </div>
       </section>
-      <DistributionForm
-        v-if="sameDist"
-        :distribution="sameDistValue"
-        @distribution="handleSameDistributionChange"
-      />
+      <DistributionForm v-if="sameDist" v-model="sameDistValue" />
       <div v-else>
         <section v-for="(server, index) in servers">
           <header class="server_header">
@@ -29,10 +25,7 @@
               Eliminar
             </a>
           </header>
-          <DistributionForm
-            :distribution="server.distribution"
-            @distribution="handleDistribution(index, $event)"
-          />
+          <DistributionForm v-model="server.distribution" />
         </section>
       </div>
       <footer>
@@ -64,9 +57,14 @@ const sameDistValue = ref<DistributionData>({
   name: 'exponential',
   mean: { mean: 0 }
 })
-watch(sameDist, () => {
-  handleSameDistributionChange()
-})
+watch(sameDist, () => handleSameDistributionChange())
+function handleSameDistributionChange() {
+  if (sameDist.value) {
+    servers.value.forEach((server) => {
+      server.distribution = sameDistValue.value
+    })
+  }
+}
 
 function handleCreateServer() {
   servers.value.push({
@@ -77,18 +75,6 @@ function handleCreateServer() {
       name: 'exponential'
     }
   })
-}
-
-function handleDistribution(index: number, value: DistributionData) {
-  servers.value[index].distribution = value
-}
-
-function handleSameDistributionChange() {
-  if (sameDist.value) {
-    servers.value.forEach((server) => {
-      server.distribution = sameDistValue.value
-    })
-  }
 }
 
 function handleDeleteServer(index: number) {
