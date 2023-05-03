@@ -1,7 +1,9 @@
 <template>
-  <StationModal open :station="{ id: '0', key: '1', servers: [] }" />
+  <div class="container">
+    <TheNav />
+  </div>
 </template>
 
 <script lang="ts" setup>
-import StationModal from './components/StationModal.vue'
+import TheNav from './layout/TheNav.vue'
 </script>
