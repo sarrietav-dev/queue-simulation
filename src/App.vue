@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <TheNav />
-    <form action="">
+    <form @submit.prevent="onSubmit">
       <section>
         <h2>Tasa de llegada</h2>
         <DistributionForm v-model="arrival" />
@@ -47,10 +47,19 @@
   </div>
   <Teleport to="body">
     <StationModal
-      v-if="isEditingModalOpen && stationEditingIndex !== null"
-      :open="isEditingModalOpen"
+      v-if="isEditModalOpen && stationEditingIndex !== null"
+      :open="isEditModalOpen"
       v-model="stations[stationEditingIndex]"
-      @close="handleModalClose"
+      @close="handleEditModalClose"
+    />
+  </Teleport>
+  <Teleport to="body">
+    <ResultsModal
+      v-if="resultModalOpen"
+      :open="resultModalOpen"
+      :timeSpent="10"
+      :longestQueue="{ size: 10, station: ['1', '2'] }"
+      @close="handleResultsModalClose"
     />
   </Teleport>
 </template>
@@ -61,6 +70,7 @@ import DistributionForm from './components/DistributionForm.vue'
 import TheNav from './layout/TheNav.vue'
 import StationCard from './components/StationCard.vue'
 import StationModal from './components/StationModal.vue'
+import ResultsModal from './components/ResultsModal.vue'
 
 const arrival = ref<DistributionData>({
   name: 'exponential',
@@ -83,8 +93,10 @@ const stations = ref<StationData[]>([
   }
 ])
 
+const resultModalOpen = ref(false)
+
 const stationEditingIndex = ref<number | null>(null)
-const isEditingModalOpen = ref(false)
+const isEditModalOpen = ref(false)
 
 const options = ref<Options>({
   simulationTime: 0,
@@ -111,12 +123,20 @@ function clientNewStation() {
 
 function openEditStationModal(index: number) {
   stationEditingIndex.value = index
-  isEditingModalOpen.value = true
+  isEditModalOpen.value = true
 }
 
-function handleModalClose() {
-  isEditingModalOpen.value = false
+function handleEditModalClose() {
+  isEditModalOpen.value = false
   stationEditingIndex.value = null
+}
+
+function handleResultsModalClose() {
+  resultModalOpen.value = false
+}
+
+function onSubmit() {
+  resultModalOpen.value = true
 }
 </script>
 
