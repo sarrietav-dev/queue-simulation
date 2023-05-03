@@ -1,6 +1,6 @@
-import { Random } from "../../utils/random";
-import { Distribution } from "../distributions/Distribution";
-import { Client } from "./Client";
+import type { Random } from "../../utils/random";
+import type { Distribution } from "../distributions/Distribution";
+import type { Client } from "./Client";
 
 export class Server {
   constructor(private servingRate: Distribution, private random: Random) {}

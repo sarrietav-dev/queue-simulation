@@ -1,5 +1,5 @@
-import { Random } from "../../utils/random";
-import { Distribution } from "../distributions/Distribution";
+import type { Random } from "../../utils/random";
+import type { Distribution } from "../distributions/Distribution";
 
 export class ArrivalIterator {
   constructor(private entryRate: Distribution, private random: Random) {}
