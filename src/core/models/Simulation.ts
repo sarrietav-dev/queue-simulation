@@ -3,7 +3,7 @@ import { Client } from './Client'
 import type { Mediator } from './Mediator'
 import type { Station } from './Station'
 
-type SimulationResults = {
+export type SimulationResults = {
   time: number
   longestQueue: {
     station: number[]
