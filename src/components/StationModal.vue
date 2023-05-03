@@ -1,7 +1,7 @@
 <template>
   <dialog :open="props.open">
     <article>
-      <header>Estación {{ props.station.id }}</header>
+      <header>Estación {{ props.modelValue.id }}</header>
       <section class="station_buttons">
         <h2 class="server_count">
           Servidores <span v-show="sameDist">{{ servers.length }}</span>
@@ -37,34 +37,34 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { ref, watchEffect } from 'vue'
 import DistributionForm from './DistributionForm.vue'
 
 const props = defineProps<{
   open: boolean
-  station: StationData
+  modelValue: StationData
 }>()
 
 const emit = defineEmits<{
-  (e: 'confirm', value: StationData): void
+  (e: 'update:modelValue', value: StationData): void
   (e: 'close'): void
 }>()
 
-const servers = ref<ServerData[]>(props.station.servers)
+const servers = ref<ServerData[]>(props.modelValue.servers)
 
 const sameDist = ref(false)
 const sameDistValue = ref<DistributionData>({
   name: 'exponential',
   mean: { mean: 0 }
 })
-watch(sameDist, () => handleSameDistributionChange())
-function handleSameDistributionChange() {
+
+watchEffect(() => {
   if (sameDist.value) {
     servers.value.forEach((server) => {
       server.distribution = sameDistValue.value
     })
   }
-}
+})
 
 function handleCreateServer() {
   servers.value.push({
@@ -84,11 +84,12 @@ function handleDeleteServer(index: number) {
 }
 
 function handleConfirm() {
-  emit('confirm', {
-    id: props.station.id,
-    key: props.station.key,
+  emit('update:modelValue', {
+    id: props.modelValue.id,
+    key: props.modelValue.key,
     servers: servers.value
   })
+  emit('close')
 }
 
 function closeDialog() {

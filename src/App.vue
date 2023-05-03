@@ -9,12 +9,22 @@
       <section>
         <header class="stations_header">
           <h2>Estaciones</h2>
-          <button @click="clientNewStation" :disabled="stations.length === 4" role="button">
+          <button
+            @click="clientNewStation"
+            :disabled="stations.length === 4"
+            type="button"
+            role="button"
+          >
             Agregar mas estaciones
           </button>
         </header>
         <div class="grid">
-          <StationCard v-for="station in stations" :station="station" :key="station.key" />
+          <StationCard
+            @click="openEditStationModal(index)"
+            v-for="(station, index) in stations"
+            :station="station"
+            :key="station.key"
+          />
         </div>
       </section>
       <section>
@@ -35,6 +45,14 @@
       <button type="submit">Iniciar simulacion</button>
     </form>
   </div>
+  <Teleport to="body">
+    <StationModal
+      v-if="isEditingModalOpen && stationEditingIndex !== null"
+      :open="isEditingModalOpen"
+      v-model="stations[stationEditingIndex]"
+      @close="handleModalClose"
+    />
+  </Teleport>
 </template>
 
 <script lang="ts" setup>
@@ -42,6 +60,7 @@ import { ref } from 'vue'
 import DistributionForm from './components/DistributionForm.vue'
 import TheNav from './layout/TheNav.vue'
 import StationCard from './components/StationCard.vue'
+import StationModal from './components/StationModal.vue'
 
 const arrival = ref<DistributionData>({
   name: 'exponential',
@@ -64,6 +83,9 @@ const stations = ref<StationData[]>([
   }
 ])
 
+const stationEditingIndex = ref<number | null>(null)
+const isEditingModalOpen = ref(false)
+
 const options = ref<Options>({
   simulationTime: 0,
   simulationRuns: 0
@@ -85,6 +107,16 @@ function clientNewStation() {
       }
     ]
   })
+}
+
+function openEditStationModal(index: number) {
+  stationEditingIndex.value = index
+  isEditingModalOpen.value = true
+}
+
+function handleModalClose() {
+  isEditingModalOpen.value = false
+  stationEditingIndex.value = null
 }
 </script>
 
