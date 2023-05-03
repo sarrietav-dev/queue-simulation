@@ -5,5 +5,11 @@ type StationData = {
 }
 
 type ServerData = {
+  key: string
   distribution: DistributionData
+}
+
+type Options = {
+  simulationTime: number
+  simulationRuns: number
 }

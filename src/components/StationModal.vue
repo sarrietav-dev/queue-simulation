@@ -18,7 +18,7 @@
       </section>
       <DistributionForm v-if="sameDist" v-model="sameDistValue" />
       <div v-else>
-        <section v-for="(server, index) in servers">
+        <section :key="server.key" v-for="(server, index) in servers">
           <header class="server_header">
             <h3>Servidor {{ index }}</h3>
             <a href="#" role="button" className="secondary" @click="handleDeleteServer(index)">
@@ -68,6 +68,7 @@ function handleSameDistributionChange() {
 
 function handleCreateServer() {
   servers.value.push({
+    key: Math.random().toString(36).substring(2, 9),
     distribution: {
       mean: {
         mean: 0
