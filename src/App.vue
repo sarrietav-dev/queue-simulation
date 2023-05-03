@@ -24,6 +24,7 @@
             v-for="(station, index) in stations"
             :station="station"
             :key="station.key"
+            class="station_card"
           />
         </div>
       </section>
@@ -149,5 +150,9 @@ function onSubmit() {
 
 button[role='button'] {
   width: initial;
+}
+
+.station_card {
+  cursor: pointer;
 }
 </style>
