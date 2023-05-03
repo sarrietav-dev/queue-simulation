@@ -16,7 +16,11 @@
           </label>
         </div>
       </section>
-      <DistributionForm v-if="sameDist" @distribution="handleDistribution" />
+      <DistributionForm
+        v-if="sameDist"
+        :distribution="sameDistValue"
+        @distribution="handleSameDistributionChange"
+      />
       <div v-else>
         <section v-for="(server, index) in servers">
           <header class="server_header">
@@ -25,29 +29,44 @@
               Eliminar
             </a>
           </header>
-          <DistributionForm :distribution="server.distribution" @distribution="handleDistribution" />
+          <DistributionForm
+            :distribution="server.distribution"
+            @distribution="handleDistribution(index, $event)"
+          />
         </section>
       </div>
       <footer>
-        <a href="#" role="button" class="secondary"> Cancelar </a>
-        <a href="#" role="button">Confirmar</a>
+        <a href="#" role="button" class="secondary" @click="closeDialog"> Cancelar </a>
+        <a href="#" role="button" @click="handleConfirm">Confirmar</a>
       </footer>
     </article>
   </dialog>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import DistributionForm from './DistributionForm.vue'
-
-const sameDist = ref(true)
 
 const props = defineProps<{
   open: boolean
   station: StationData
 }>()
 
+const emit = defineEmits<{
+  (e: 'confirm', value: StationData): void
+  (e: 'close'): void
+}>()
+
 const servers = ref<ServerData[]>(props.station.servers)
+
+const sameDist = ref(false)
+const sameDistValue = ref<DistributionData>({
+  name: 'exponential',
+  mean: { mean: 0 }
+})
+watch(sameDist, () => {
+  handleSameDistributionChange()
+})
 
 function handleCreateServer() {
   servers.value.push({
@@ -60,12 +79,33 @@ function handleCreateServer() {
   })
 }
 
-function handleDistribution(value: DistributionData) {
-  console.log(value)
+function handleDistribution(index: number, value: DistributionData) {
+  servers.value[index].distribution = value
+}
+
+function handleSameDistributionChange() {
+  if (sameDist.value) {
+    servers.value.forEach((server) => {
+      server.distribution = sameDistValue.value
+    })
+  }
 }
 
 function handleDeleteServer(index: number) {
-  props.station.servers.splice(index, 1)
+  if (servers.value.length === 1) return
+  servers.value.splice(index, 1)
+}
+
+function handleConfirm() {
+  emit('confirm', {
+    id: props.station.id,
+    key: props.station.key,
+    servers: servers.value
+  })
+}
+
+function closeDialog() {
+  emit('close')
 }
 </script>
 
