@@ -9,15 +9,13 @@
       </select>
     </label>
     <template v-if="distribution === 'uniform'">
-      <label for="min"
-        >Min
-
-        <input v-model.number="limits.min" id="min" />
+      <label for="min">
+        a
+        <input v-model.number="limits.a" id="min" />
       </label>
-      <label for="max"
-        >Max
-
-        <input v-model.number="limits.max" id="max" />
+      <label for="max">
+        b
+        <input v-model.number="limits.b" id="max" />
       </label>
     </template>
     <label v-else for="lambda"
@@ -28,19 +26,37 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, type PropType } from 'vue'
 
-const distribution = ref<DistributionName>('exponential')
-const mean = ref<{ mean: number }>({ mean: 0 })
-const limits = ref<{ min: number; max: number }>({ min: 0, max: 0 })
+const props = defineProps({
+  distribution: {
+    type: Object as PropType<DistributionData>,
+    default: {
+      name: 'exponential',
+      mean: { mean: 0 }
+    }
+  }
+})
+const distribution = ref<DistributionName>(props.distribution?.name ?? 'exponential')
+
+const mean = (props.distribution?.mean as Mean).mean
+  ? ref<Mean>({ mean: (props.distribution?.mean as Mean).mean })
+  : ref<Mean>({ mean: 0 })
+
+const limits = (props.distribution?.mean as UniformMean).a
+  ? ref<UniformMean>({
+      a: (props.distribution?.mean as UniformMean).a,
+      b: (props.distribution?.mean as UniformMean).b
+    })
+  : ref<UniformMean>({ a: 0, b: 0 })
 
 watchEffect(() => {
   if (distribution.value === 'uniform') {
     emit('distribution', {
       name: distribution.value,
       mean: {
-        a: limits.value.min,
-        b: limits.value.max
+        a: limits.value.a,
+        b: limits.value.b
       }
     })
   } else {

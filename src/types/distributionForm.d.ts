@@ -1,6 +1,3 @@
-type Server = {
-  distribution: DistributionData;
-};
 
 type DistributionData = {
   name: DistributionName;

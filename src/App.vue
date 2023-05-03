@@ -1,11 +1,7 @@
 <template>
-  <DistributionForm @distribution="handleDistribution" />
+  <StationModal open :station="{ id: '0', key: '1', servers: [] }" />
 </template>
 
 <script lang="ts" setup>
-import DistributionForm from './components/DistributionForm.vue'
-
-function handleDistribution(value: DistributionData) {
-  console.log(value)
-}
+import StationModal from './components/StationModal.vue'
 </script>
