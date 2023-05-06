@@ -44,7 +44,7 @@ export class Simulation implements Mediator {
     }
   }
 
-  private get arrivingClients() {
+  private get arrivingClients(): number {
     return this.arrivals.reduce((a, b) => a + b, 0)
   }
 
@@ -80,24 +80,24 @@ export class Simulation implements Mediator {
     return longestQueue
   }
 
-  getArrivingClients() {
+  getArrivingClients(): number {
     const clientsArrived = this.arrivals[this._time] ?? 0
     this._clientsInSystem += clientsArrived
     return clientsArrived
   }
 
-  private tick() {
+  private tick(): void {
     this._time++
     this.stations.forEach((station) => station.tick())
   }
 
-  private enqueueClient(...clients: Client[]) {
+  private enqueueClient(...clients: Client[]): void {
     for (let client of clients) {
       this.stations[0].enqueueClient(client)
     }
   }
 
-  private createClient() {
+  private createClient(): Client {
     return new Client()
   }
 
