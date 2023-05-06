@@ -6,4 +6,8 @@ export class Client {
   get timeWaiting(): number {
     return this._timeWaiting
   }
+
+  increaseWaitTime(): void {
+    this._timeWaiting++
+  }
 }
