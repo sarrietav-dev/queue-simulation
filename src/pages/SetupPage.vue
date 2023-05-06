@@ -38,8 +38,8 @@
             <input v-model="options.simulationTime" id="simulation_duration" />
           </label>
           <label htmlFor="simulation_count">
-            Cantidad de simulaciones
-            <input v-model="options.simulationRuns" id="simulation_count" />
+            Semilla
+            <input v-model="options.seed" id="simulation_count" />
           </label>
         </div>
       </section>
@@ -99,7 +99,7 @@ const isEditModalOpen = ref(false)
 
 const options = ref<Options>({
   simulationTime: 0,
-  simulationRuns: 0
+  seed: 0
 })
 
 function clientNewStation() {

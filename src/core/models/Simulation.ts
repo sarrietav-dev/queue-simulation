@@ -29,7 +29,10 @@ export class Simulation implements Mediator {
     const arrivingClients = this.arrivingClients
 
     while (arrivingClients > this.clientsServed) {
-      const clientsArrived = this.getClientsArrived()
+      const clientsArrived = this.getArrivingClients()
+      if (clientsArrived === 2) {
+        console.log('2 clients arrived')
+      }
       const clients: Client[] = Array.from({ length: clientsArrived }, () => this.createClient())
       this.enqueueClient(...clients)
       this.tick()
@@ -77,8 +80,8 @@ export class Simulation implements Mediator {
     return longestQueue
   }
 
-  getClientsArrived() {
-    const clientsArrived = this.arrivals[this._time]
+  getArrivingClients() {
+    const clientsArrived = this.arrivals[this._time] ?? 0
     this._clientsInSystem += clientsArrived
     return clientsArrived
   }
