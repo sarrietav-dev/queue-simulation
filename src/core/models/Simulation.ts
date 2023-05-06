@@ -23,6 +23,7 @@ export class Simulation implements Mediator {
   private _time: number = 0
   private _clientsInSystem: number = 0
   private _clientsServed: number = 0
+  private waitTimeAcumulator: number = 0
   private arrivals: number[] = []
 
   public run(): SimulationResults {
@@ -103,10 +104,15 @@ export class Simulation implements Mediator {
 
   notify(senderIndex: number, client: Client): void {
     if (senderIndex === this.stations.length - 1) {
+      this.waitTimeAcumulator += client.timeWaiting
       this._clientsServed++
     } else {
       this.stations[senderIndex + 1].enqueueClient(client)
     }
+  }
+
+  get averageWaitTime(): number {
+    return this.waitTimeAcumulator / this.clientsServed
   }
 
   get time(): number {
