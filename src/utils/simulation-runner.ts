@@ -24,13 +24,18 @@ export class SimulationRunner {
     const { arrival, stations, options } = this.data
     const builder = new SimulationBuilder()
 
-    builder.setArrivalIterator(new ArrivalIterator(this.getDistribution(arrival), new Random()))
+    builder.setArrivalIterator(
+      new ArrivalIterator(this.getDistribution(arrival), new Random(this.data.options.seed))
+    )
     builder.setTimeStop(options.simulationTime)
 
     builder.setStations(
       stations.map((station) => {
         const servers = station.servers.map((server) => {
-          return new Server(this.getDistribution(server.distribution), new Random())
+          return new Server(
+            this.getDistribution(server.distribution),
+            new Random(this.data.options.seed)
+          )
         })
 
         return new Station(...servers)
@@ -42,9 +47,7 @@ export class SimulationRunner {
 
   public get runs(): Promise<SimulationResults>[] {
     const results = []
-    for (let i = 0; i < this.data.options.simulationRuns; i++) {
-      results.push(this.simulationResultPromiseFactory(this.builder))
-    }
+    results.push(this.simulationResultPromiseFactory(this.builder))
     return results
   }
 

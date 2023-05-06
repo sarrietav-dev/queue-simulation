@@ -11,5 +11,5 @@ type ServerData = {
 
 type Options = {
   simulationTime: number
-  simulationRuns: number
+  seed: number
 }
