@@ -11,22 +11,6 @@ export class Server {
   private _queue: Client[] = []
   private _usesQueue: boolean = false
 
-  set onClientServed(onClientServed: (client: Client) => void) {
-    this._onClientServed = onClientServed
-  }
-
-  set usesQueue(usesQueue: boolean) {
-    this._usesQueue = usesQueue
-  }
-
-  get isBusy(): boolean {
-    return this.timeRemainingUntilFree > 0
-  }
-
-  get timeRemaining(): number {
-    return this.timeRemainingUntilFree
-  }
-
   serve(client: Client): void {
     this.clientBeingServed = client
     while (this.timeRemainingUntilFree <= 0) {
@@ -48,6 +32,10 @@ export class Server {
     }
   }
 
+  get isBusy(): boolean {
+    return this.timeRemainingUntilFree > 0
+  }
+
   notifyIfFinished(): void {
     if (this.timeRemainingUntilFree === 0) {
       this.notifyStation()
@@ -63,6 +51,18 @@ export class Server {
 
   enqueueClient(client: Client): void {
     this._queue.push(client)
+  }
+
+  set onClientServed(onClientServed: (client: Client) => void) {
+    this._onClientServed = onClientServed
+  }
+
+  set usesQueue(usesQueue: boolean) {
+    this._usesQueue = usesQueue
+  }
+
+  get timeRemaining(): number {
+    return this.timeRemainingUntilFree
   }
 
   get queue(): Client[] {

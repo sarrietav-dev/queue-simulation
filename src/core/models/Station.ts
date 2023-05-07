@@ -18,10 +18,6 @@ export class Station {
   private _greatestQueueLength: number = 0
   private _usesServersWithQueue: boolean = false
 
-  get size() {
-    return this._servers.length
-  }
-
   addServer(...server: Server[]) {
     if (this.size + server.length > 4) {
       throw new Error('Cannot add more than 4 servers')
@@ -36,8 +32,8 @@ export class Station {
     this._servers.push(...server)
   }
 
-  get clientsWaiting() {
-    return this.queue.length
+  get size() {
+    return this._servers.length
   }
 
   enqueueClient(person: Client) {
@@ -88,16 +84,16 @@ export class Station {
     this._servers.forEach((server) => server.tick())
   }
 
-  set mediator(mediator: Mediator) {
-    this._mediator = mediator
+  private isAnyServerAvailable() {
+    return this._servers.some((server) => !server.isBusy)
   }
 
   private getAvailableServer() {
     return this._servers.find((server) => !server.isBusy)
   }
 
-  private isAnyServerAvailable() {
-    return this._servers.some((server) => !server.isBusy)
+  set mediator(mediator: Mediator) {
+    this._mediator = mediator
   }
 
   set index(index: number) {
@@ -112,5 +108,9 @@ export class Station {
         server.usesQueue = true
       })
     }
+  }
+
+  get clientsWaiting() {
+    return this.queue.length
   }
 }
