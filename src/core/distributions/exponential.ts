@@ -1,7 +1,9 @@
-import type { Distribution } from './Distribution'
+import { Distribution } from './Distribution'
 
-export class Exponential implements Distribution {
-  constructor(private lambda: number) {}
+export class Exponential extends Distribution {
+  constructor(private lambda: number) {
+    super()
+  }
 
   getVariable(x: number): number {
     return -this.lambda * Math.log(x)

@@ -1,9 +1,10 @@
-import type { Distribution } from './Distribution'
+import { Distribution } from './Distribution'
 
 type Limit = { lower: number; upper: number }
 
-export class Poisson implements Distribution {
+export class Poisson extends Distribution {
   constructor(private mean: number) {
+    super()
     this.generateLimits()
   }
 

@@ -1,3 +1,3 @@
-export interface Distribution {
-  getVariable(x: number): number;
+export abstract class Distribution {
+  abstract getVariable(x: number): number;
 }
