@@ -23,9 +23,11 @@ export class SimulationRunner {
   private createSimulationBuilder(): SimulationBuilder {
     const { arrival, stations, options } = this.data
     const builder = new SimulationBuilder()
+    
+    const random = new Random(this.data.options.seed)
 
     builder.setArrivalIterator(
-      new ArrivalIterator(this.getDistribution(arrival), new Random(this.data.options.seed))
+      new ArrivalIterator(this.getDistribution(arrival), random)
     )
     builder.setTimeStop(options.simulationTime)
 
@@ -34,7 +36,7 @@ export class SimulationRunner {
         const servers = station.servers.map((server) => {
           return new Server(
             this.getDistribution(server.distribution),
-            new Random(this.data.options.seed)
+            random
           )
         })
 
