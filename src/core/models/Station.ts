@@ -49,13 +49,22 @@ export class Station {
   }
 
   private enqueueClientInServer(person: Client) {
+    const shortestQueueIndex = this.shortestQueue
+
+    this._servers[shortestQueueIndex].enqueueClient(person)
+  }
+
+  get shortestQueue(): number {
     const queueLengths = this._servers.map((server) => {
       return server.queue.length
     })
 
-    const minQueueLength = queueLengths.findIndex(() => Math.min(...queueLengths))
+    const minQueueLength = Math.min(...queueLengths)
+    const minQueueIndex = this._servers.findIndex(
+      (server) => server.queue.length === minQueueLength
+    )
 
-    this._servers[minQueueLength].enqueueClient(person)
+    return minQueueIndex
   }
 
   get greatestQueueLength() {
