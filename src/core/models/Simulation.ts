@@ -9,6 +9,7 @@ export type SimulationResults = {
     station: number[]
     length: number
   }
+  waitTimeAverage: number
 }
 
 export class Simulation implements Mediator {
@@ -41,7 +42,8 @@ export class Simulation implements Mediator {
 
     return {
       time: this.time,
-      longestQueue: this.longestQueue
+      longestQueue: this.longestQueue,
+      waitTimeAverage: this.averageWaitTime
     }
   }
 
