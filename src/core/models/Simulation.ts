@@ -130,6 +130,7 @@ export class SimulationBuilder {
   private stations: Station[] = []
   private arrivalIterator?: ArrivalIterator
   private timeStop: number = 60
+  private usesServersWithQueue: boolean = false
 
   public setStations(stations: Station[]): SimulationBuilder {
     this.stations = stations
@@ -138,6 +139,11 @@ export class SimulationBuilder {
 
   public setTimeStop(timeStop: number): SimulationBuilder {
     this.timeStop = timeStop
+    return this
+  }
+
+  public setServersWithQueue(serversWithQueue: boolean): SimulationBuilder {
+    this.usesServersWithQueue = serversWithQueue
     return this
   }
 
@@ -157,10 +163,11 @@ export class SimulationBuilder {
 
     const simulation = new Simulation(this.stations, this.arrivalIterator, this.timeStop)
 
-    for (let i = 0; i < this.stations.length; i++) {
-      this.stations[i].mediator = simulation
-      this.stations[i].index = i
-    }
+    this.stations.forEach((station, i) => {
+      station.usesServersWithQueue = this.usesServersWithQueue
+      station.mediator = simulation
+      station.index = i
+    })
 
     return simulation
   }

@@ -16,6 +16,7 @@ export class Station {
   private _index: number = 0
   private _mediator?: Mediator
   private _greatestQueueLength: number = 0
+  private _usesServersWithQueue: boolean = false
 
   get size() {
     return this._servers.length
@@ -40,11 +41,25 @@ export class Station {
   }
 
   enqueueClient(person: Client) {
+    if (this._usesServersWithQueue) {
+      return this.enqueueClientInServer(person)
+    }
+
     this.queue.push(person)
 
     if (this.queue.length > this._greatestQueueLength) {
       this._greatestQueueLength = this.queue.length
     }
+  }
+
+  private enqueueClientInServer(person: Client) {
+    const queueLengths = this._servers.map((server) => {
+      return server.queue.length
+    })
+
+    const minQueueLength = queueLengths.findIndex(() => Math.min(...queueLengths))
+
+    this._servers[minQueueLength].enqueueClient(person)
   }
 
   get greatestQueueLength() {
@@ -54,19 +69,21 @@ export class Station {
   tick() {
     this._servers.forEach((server) => server.notifyIfFinished())
 
-    while (this.isAnyServerAvailable()) {
-      const server = this.getAvailableServer()
+    if (!this._usesServersWithQueue) {
+      while (this.isAnyServerAvailable()) {
+        const server = this.getAvailableServer()
 
-      if (!server) break
+        if (!server) break
 
-      const client = this.queue.shift()
+        const client = this.queue.shift()
 
-      if (!client) break
+        if (!client) break
 
-      server.serve(client)
+        server.serve(client)
+      }
+
+      this.queue.forEach((client) => client.increaseWaitTime())
     }
-
-    this.queue.forEach((client) => client.increaseWaitTime())
 
     this._servers.forEach((server) => server.tick())
   }
@@ -85,5 +102,15 @@ export class Station {
 
   set index(index: number) {
     this._index = index
+  }
+
+  set usesServersWithQueue(usesServersWithQueue: boolean) {
+    this._usesServersWithQueue = usesServersWithQueue
+
+    if (usesServersWithQueue) {
+      this._servers.forEach((server) => {
+        server.usesQueue = true
+      })
+    }
   }
 }

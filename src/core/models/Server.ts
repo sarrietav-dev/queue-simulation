@@ -8,9 +8,15 @@ export class Server {
   private timeRemainingUntilFree: number = -1
   private clientBeingServed?: Client
   private _onClientServed: (client: Client) => void = () => {}
+  private _queue: Client[] = []
+  private _usesQueue: boolean = false
 
   set onClientServed(onClientServed: (client: Client) => void) {
     this._onClientServed = onClientServed
+  }
+
+  set usesQueue(usesQueue: boolean) {
+    this._usesQueue = usesQueue
   }
 
   get isBusy(): boolean {
@@ -29,7 +35,15 @@ export class Server {
   }
 
   tick(): void {
-    if (this.timeRemainingUntilFree > 0) {
+    if (this._usesQueue && !this.isBusy) {
+      const client = this._queue.shift()
+
+      if (client) {
+        this.serve(client)
+      }
+    }
+
+    if (this.isBusy) {
       this.timeRemainingUntilFree--
     }
   }
@@ -45,5 +59,13 @@ export class Server {
       this._onClientServed(this.clientBeingServed)
       this.clientBeingServed = undefined
     }
+  }
+
+  enqueueClient(client: Client): void {
+    this._queue.push(client)
+  }
+
+  get queue(): Client[] {
+    return this._queue
   }
 }
