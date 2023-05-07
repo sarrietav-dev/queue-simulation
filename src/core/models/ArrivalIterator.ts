@@ -4,7 +4,7 @@ import type { Distribution } from "../distributions/Distribution";
 export class ArrivalIterator {
   constructor(private entryRate: Distribution, private random: Random) {}
 
-  getArrivals(timeLimit: number) {
+  getArrivals(timeLimit: number): number[] {
     const arrivals: number[] = [];
 
     for (let time = 0; time < timeLimit; time++) {

@@ -21,7 +21,7 @@ export class Server {
     return this.timeRemainingUntilFree
   }
 
-  serve(client: Client) {
+  serve(client: Client): void {
     this.clientBeingServed = client
     while (this.timeRemainingUntilFree <= 0) {
       this.timeRemainingUntilFree = Math.round(this.servingRate.getVariable(this.random.get()))
@@ -40,7 +40,7 @@ export class Server {
     }
   }
 
-  notifyStation() {
+  notifyStation(): void {
     if (this.clientBeingServed) {
       this._onClientServed(this.clientBeingServed)
       this.clientBeingServed = undefined

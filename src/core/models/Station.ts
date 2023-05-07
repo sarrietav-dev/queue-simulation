@@ -66,6 +66,8 @@ export class Station {
       server.serve(client)
     }
 
+    this.queue.forEach((client) => client.increaseWaitTime())
+
     this._servers.forEach((server) => server.tick())
   }
 

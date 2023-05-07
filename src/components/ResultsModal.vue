@@ -3,10 +3,17 @@
     <article>
       <header>
         <a href="#close" aria-label="Close" className="close" @click="closeDialog"></a>
-        Resultados de la simulacion
+        Resultados de la simulación
       </header>
       <p v-if="isLoading">Cargando...</p>
-      <p v-else><strong>Tiempo promedio</strong> {{ state }}</p>
+      <p v-else>
+        <p>
+          <strong>Tiempo: </strong> {{ state.time }}
+        </p>
+        <p>
+          <strong>Tiempo promedio de espera de un cliente:</strong> {{ state.waitTime }}
+        </p>
+      </p>
     </article>
   </dialog>
 </template>
@@ -20,11 +27,17 @@ const data = useSimulations()
 
 const { state, isLoading, execute } = useAsyncState(
   Promise.all(data.$state.simulations).then((response) => {
-    console.log(response);
-    
-    return response.reduce((sum, current) => sum + current.time, 0) / response.length
+    const [resp] = response
+
+    return {
+      time: resp.time,
+      waitTime: resp.waitTimeAverage
+    }
   }),
-  0
+  {
+    time: 0,
+    waitTime: 0
+  }
 )
 
 onMounted(() => execute())
