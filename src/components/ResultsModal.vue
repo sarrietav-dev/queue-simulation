@@ -6,14 +6,8 @@
         Resultados de la simulación
       </header>
       <p v-if="isLoading">Cargando...</p>
-      <p v-else>
-        <p>
-          <strong>Tiempo: </strong> {{ state.time }}
-        </p>
-        <p>
-          <strong>Tiempo promedio de espera de un cliente:</strong> {{ state.waitTime }}
-        </p>
-      </p>
+      <p v-else><strong>Tiempo: </strong> {{ state.time }}</p>
+      <p><strong>Tiempo promedio de espera de un cliente:</strong> {{ state.waitTime }}</p>
     </article>
   </dialog>
 </template>
@@ -54,3 +48,9 @@ function closeDialog() {
   emit('close')
 }
 </script>
+
+<style>
+.block {
+  display: block;
+}
+</style>
