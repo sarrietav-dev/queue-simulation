@@ -1,3 +1,3 @@
 export abstract class Distribution {
-  abstract getVariable(x: number): number;
+  abstract getVariable(x: number): number
 }

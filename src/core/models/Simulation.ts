@@ -95,7 +95,7 @@ export class Simulation implements Mediator {
   }
 
   private enqueueClient(...clients: Client[]): void {
-    for (let client of clients) {
+    for (const client of clients) {
       this.stations[0].enqueueClient(client)
     }
   }
