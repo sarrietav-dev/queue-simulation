@@ -251,3 +251,30 @@ describe('Longest queue tests', () => {
     expect(results.longestQueue.length).toBe(2)
   })
 })
+
+describe('Servers with queue tests', () => {
+  const arrivalIterator = new ArrivalIterator(new Poisson(0.333), new Random(2))
+  vi.spyOn(arrivalIterator, 'getArrivals').mockReturnValue([1, 1, 1, 1])
+
+  it('works?', () => {
+    const distribution = new Poisson(0.5)
+    vi.spyOn(distribution, 'getVariable').mockReturnValue(2)
+
+    const simulation = new SimulationBuilder()
+      .setStations([
+        new Station(
+          new Server(distribution, new Random(1)),
+          new Server(distribution, new Random(1))
+        )
+      ])
+      .setArrivalIterator(arrivalIterator)
+      .setTimeStop(4)
+      .setServersWithQueue(true)
+      .build()
+
+    const results = simulation.run()
+
+    expect(results.longestQueue.station[0]).toBe(0)
+    expect(results.longestQueue.length).toBe(1)
+  })
+})
