@@ -25,6 +25,10 @@ export class Server {
       if (client) {
         this.serve(client)
       }
+
+      this._queue.forEach((client) => {
+        client.increaseWaitTime()
+      })
     }
 
     if (this.isBusy) {
