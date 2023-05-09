@@ -24,7 +24,7 @@ export class SimulationRunner {
     const { arrival, stations, options } = this.data
     const builder = new SimulationBuilder()
 
-    const random = new Random(this.data.options.seed)
+    const random = new Random(options.seed)
 
     builder.setArrivalIterator(new ArrivalIterator(this.getDistribution(arrival), random))
     builder.setTimeStop(options.simulationTime)
@@ -38,6 +38,8 @@ export class SimulationRunner {
         return new Station(...servers)
       })
     )
+
+    builder.setServersWithQueue(options.serversWithQueue)
 
     return builder
   }

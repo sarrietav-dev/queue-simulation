@@ -11,5 +11,6 @@ type ServerData = {
 
 type Options = {
   simulationTime: number
-  seed: number
+  seed: number,
+  serversWithQueue: boolean
 }

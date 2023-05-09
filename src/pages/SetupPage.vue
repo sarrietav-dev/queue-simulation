@@ -9,14 +9,20 @@
       <section>
         <header class="stations_header">
           <h2>Estaciones</h2>
-          <button
-            @click="clientNewStation"
-            :disabled="stations.length === 4"
-            type="button"
-            role="button"
-          >
-            Agregar mas estaciones
-          </button>
+          <div class="stations_options">
+            <button
+              @click="clientNewStation"
+              :disabled="stations.length === 4"
+              type="button"
+              role="button"
+            >
+              Agregar mas estaciones
+            </button>
+            <label>
+              <input v-model="options.serversWithQueue" type="checkbox" name="" id="" />
+              Usar servidores con cola?
+            </label>
+          </div>
         </header>
         <div class="grid">
           <StationCard
@@ -99,7 +105,8 @@ const isEditModalOpen = ref(false)
 
 const options = ref<Options>({
   simulationTime: 0,
-  seed: 0
+  seed: 0,
+  serversWithQueue: false
 })
 
 function clientNewStation() {
