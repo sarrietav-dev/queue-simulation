@@ -12,6 +12,11 @@ export type SimulationResults = {
   waitTimeAverage: number
 }
 
+type LongestQueueResult = {
+  station: number[]
+  length: number
+}
+
 export class Simulation implements Mediator {
   constructor(
     private stations: Station[],
@@ -32,9 +37,6 @@ export class Simulation implements Mediator {
 
     while (arrivingClients > this.clientsServed) {
       const clientsArrived = this.getArrivingClients()
-      if (clientsArrived === 2) {
-        console.log('2 clients arrived')
-      }
       const clients: Client[] = Array.from({ length: clientsArrived }, () => this.createClient())
       this.enqueueClient(...clients)
       this.tick()
@@ -55,14 +57,33 @@ export class Simulation implements Mediator {
     return this._clientsServed
   }
 
-  private get longestQueue(): {
-    station: number[]
-    length: number
-  } {
-    let longestQueue: {
-      station: number[]
-      length: number
-    } = {
+  getArrivingClients(): number {
+    const clientsArrived = this.arrivals[this._time] ?? 0
+    this._clientsInSystem += clientsArrived
+    return clientsArrived
+  }
+
+  private createClient(): Client {
+    return new Client()
+  }
+
+  private enqueueClient(...clients: Client[]): void {
+    for (const client of clients) {
+      this.stations[0].enqueueClient(client)
+    }
+  }
+
+  private tick(): void {
+    this._time++
+    this.stations.forEach((station) => station.tick())
+  }
+
+  get time(): number {
+    return this._time
+  }
+
+  private get longestQueue(): LongestQueueResult {
+    let longestQueue: LongestQueueResult = {
       station: [],
       length: 0
     }
@@ -83,25 +104,12 @@ export class Simulation implements Mediator {
     return longestQueue
   }
 
-  getArrivingClients(): number {
-    const clientsArrived = this.arrivals[this._time] ?? 0
-    this._clientsInSystem += clientsArrived
-    return clientsArrived
+  get averageWaitTime(): number {
+    return this.waitTimeAcumulator / this.clientsServed
   }
 
-  private tick(): void {
-    this._time++
-    this.stations.forEach((station) => station.tick())
-  }
-
-  private enqueueClient(...clients: Client[]): void {
-    for (const client of clients) {
-      this.stations[0].enqueueClient(client)
-    }
-  }
-
-  private createClient(): Client {
-    return new Client()
+  get clientsInSystem(): number {
+    return this._clientsInSystem
   }
 
   notify(senderIndex: number, client: Client): void {
@@ -112,24 +120,13 @@ export class Simulation implements Mediator {
       this.stations[senderIndex + 1].enqueueClient(client)
     }
   }
-
-  get averageWaitTime(): number {
-    return this.waitTimeAcumulator / this.clientsServed
-  }
-
-  get time(): number {
-    return this._time
-  }
-
-  get clientsInSystem(): number {
-    return this._clientsInSystem
-  }
 }
 
 export class SimulationBuilder {
   private stations: Station[] = []
   private arrivalIterator?: ArrivalIterator
   private timeStop: number = 60
+  private usesServersWithQueue: boolean = false
 
   public setStations(stations: Station[]): SimulationBuilder {
     this.stations = stations
@@ -138,6 +135,11 @@ export class SimulationBuilder {
 
   public setTimeStop(timeStop: number): SimulationBuilder {
     this.timeStop = timeStop
+    return this
+  }
+
+  public setServersWithQueue(serversWithQueue: boolean): SimulationBuilder {
+    this.usesServersWithQueue = serversWithQueue
     return this
   }
 
@@ -157,10 +159,11 @@ export class SimulationBuilder {
 
     const simulation = new Simulation(this.stations, this.arrivalIterator, this.timeStop)
 
-    for (let i = 0; i < this.stations.length; i++) {
-      this.stations[i].mediator = simulation
-      this.stations[i].index = i
-    }
+    this.stations.forEach((station, i) => {
+      station.usesServersWithQueue = this.usesServersWithQueue
+      station.mediator = simulation
+      station.index = i
+    })
 
     return simulation
   }

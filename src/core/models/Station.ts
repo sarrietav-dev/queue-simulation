@@ -16,10 +16,7 @@ export class Station {
   private _index: number = 0
   private _mediator?: Mediator
   private _greatestQueueLength: number = 0
-
-  get size() {
-    return this._servers.length
-  }
+  private _usesServersWithQueue: boolean = false
 
   addServer(...server: Server[]) {
     if (this.size + server.length > 4) {
@@ -35,16 +32,39 @@ export class Station {
     this._servers.push(...server)
   }
 
-  get clientsWaiting() {
-    return this.queue.length
+  get size() {
+    return this._servers.length
   }
 
   enqueueClient(person: Client) {
+    if (this._usesServersWithQueue) {
+      return this.enqueueClientInServer(person)
+    }
+
     this.queue.push(person)
 
     if (this.queue.length > this._greatestQueueLength) {
       this._greatestQueueLength = this.queue.length
     }
+  }
+
+  private enqueueClientInServer(person: Client) {
+    const shortestQueueIndex = this.shortestQueue
+
+    this._servers[shortestQueueIndex].enqueueClient(person)
+  }
+
+  get shortestQueue(): number {
+    const queueLengths = this._servers.map((server) => {
+      return server.queue.length
+    })
+
+    const minQueueLength = Math.min(...queueLengths)
+    const minQueueIndex = this._servers.findIndex(
+      (server) => server.queue.length === minQueueLength
+    )
+
+    return minQueueIndex
   }
 
   get greatestQueueLength() {
@@ -54,36 +74,52 @@ export class Station {
   tick() {
     this._servers.forEach((server) => server.notifyIfFinished())
 
-    while (this.isAnyServerAvailable()) {
-      const server = this.getAvailableServer()
+    if (!this._usesServersWithQueue) {
+      while (this.isAnyServerAvailable()) {
+        const server = this.getAvailableServer()
 
-      if (!server) break
+        if (!server) break
 
-      const client = this.queue.shift()
+        const client = this.queue.shift()
 
-      if (!client) break
+        if (!client) break
 
-      server.serve(client)
+        server.serve(client)
+      }
+
+      this.queue.forEach((client) => client.increaseWaitTime())
     }
 
-    this.queue.forEach((client) => client.increaseWaitTime())
-
     this._servers.forEach((server) => server.tick())
-  }
-
-  set mediator(mediator: Mediator) {
-    this._mediator = mediator
-  }
-
-  private getAvailableServer() {
-    return this._servers.find((server) => !server.isBusy)
   }
 
   private isAnyServerAvailable() {
     return this._servers.some((server) => !server.isBusy)
   }
 
+  private getAvailableServer() {
+    return this._servers.find((server) => !server.isBusy)
+  }
+
+  set mediator(mediator: Mediator) {
+    this._mediator = mediator
+  }
+
   set index(index: number) {
     this._index = index
+  }
+
+  set usesServersWithQueue(usesServersWithQueue: boolean) {
+    this._usesServersWithQueue = usesServersWithQueue
+
+    if (usesServersWithQueue) {
+      this._servers.forEach((server) => {
+        server.usesQueue = true
+      })
+    }
+  }
+
+  get clientsWaiting() {
+    return this.queue.length
   }
 }
