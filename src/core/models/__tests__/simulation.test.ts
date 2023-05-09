@@ -5,7 +5,8 @@ import { ArrivalIterator } from '../ArrivalIterator'
 import { Poisson } from '../../distributions/poisson'
 import { Random } from '../../../utils/random'
 import { Server } from '../Server'
-import { Exponential } from '@/core/distributions/exponential'
+import { log } from 'console'
+import exp from 'constants'
 
 describe('Served client tests', () => {
   it('serves every client on the simulation', () => {
@@ -256,17 +257,12 @@ describe('Servers with queue tests', () => {
   const arrivalIterator = new ArrivalIterator(new Poisson(0.333), new Random(2))
   vi.spyOn(arrivalIterator, 'getArrivals').mockReturnValue([1, 1, 1, 1])
 
-  it('works?', () => {
+  it('returns the right wait time average', () => {
     const distribution = new Poisson(0.5)
     vi.spyOn(distribution, 'getVariable').mockReturnValue(2)
 
     const simulation = new SimulationBuilder()
-      .setStations([
-        new Station(
-          new Server(distribution, new Random(1)),
-          new Server(distribution, new Random(1))
-        )
-      ])
+      .setStations([new Station(new Server(distribution, new Random(1)))])
       .setArrivalIterator(arrivalIterator)
       .setTimeStop(4)
       .setServersWithQueue(true)
@@ -274,7 +270,6 @@ describe('Servers with queue tests', () => {
 
     const results = simulation.run()
 
-    expect(results.longestQueue.station[0]).toBe(0)
-    expect(results.longestQueue.length).toBe(1)
+    expect(results.waitTimeAverage).toBe(0.5)
   })
 })
